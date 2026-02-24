@@ -55,3 +55,12 @@ export async function updateItem(userId, itemId, updates) {
     updatedAt: serverTimestamp(),
   });
 }
+
+export async function deleteItem(userId, itemId) {
+  if (!userId || !itemId) {
+    throw new Error("Missing userId or itemId");
+  }
+
+  const ref = doc(db, "users", userId, "items", itemId);
+  await deleteDoc(ref);
+}
