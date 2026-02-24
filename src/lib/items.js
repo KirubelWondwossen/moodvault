@@ -22,3 +22,23 @@ export async function saveItem(userId, item) {
 
   return docRef.id;
 }
+
+export function subscribeToUserItems(userId, callback) {
+  if (!userId) return;
+
+  const q = query(
+    collection(db, "users", userId, "items"),
+    orderBy("createdAt", "desc"),
+  );
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const items = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    callback(items);
+  });
+
+  return unsubscribe;
+}
