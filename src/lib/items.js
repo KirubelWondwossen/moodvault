@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 
 import { db } from "./firebase";
+
 export async function saveItem(userId, item) {
   if (!userId) throw new Error("User not authenticated");
 
