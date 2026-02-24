@@ -42,3 +42,16 @@ export function subscribeToUserItems(userId, callback) {
 
   return unsubscribe;
 }
+
+export async function updateItem(userId, itemId, updates) {
+  if (!userId || !itemId) {
+    throw new Error("Missing ids");
+  }
+
+  const ref = doc(db, "users", userId, "items", itemId);
+
+  await updateDoc(ref, {
+    ...updates,
+    updatedAt: serverTimestamp(),
+  });
+}
