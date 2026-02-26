@@ -7,6 +7,8 @@ export default {
         background: "#0D1117",
         primary: "#58A6FF",
         secondary: "#1F6FEB",
+        tSecondary: "#374151",
+        tTertiary: "#9CA3AF",
         text: "#E6EDF3",
         accent: "#F78166",
       },
