@@ -44,6 +44,7 @@ function Features() {
   );
 }
 
+// eslint-disable-next-line
 function FeaturesCard({ data, icon: Icon }) {
   return (
     <div className="flex flex-col gap-1 mt-4 items-start">
