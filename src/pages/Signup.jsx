@@ -3,10 +3,10 @@ import { auth } from "../lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from "../lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import AuthLayout from "../components/AuthLayout";
+import AuthLayout from "../components/Layout/AuthLayout";
 import { Eye, EyeOff, Lock, Mail, UserRoundPlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import LabelInput from "../components/LabelInput";
+import LabelInput from "../components/ui/LabelInput";
 
 export default function Signup() {
   const [email, setEmail] = useState("");

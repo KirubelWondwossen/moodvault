@@ -1,4 +1,4 @@
-import Logo from "./Logo";
+import Logo from "../ui/Logo";
 import { Library, ShieldCheck, RefreshCw, CheckCircle } from "lucide-react";
 
 const feats = [
@@ -23,16 +23,8 @@ const feats = [
     icon: CheckCircle,
   },
 ];
-export default function AuthLayout({ children }) {
-  return (
-    <div className="grid grid-cols-2 min-h-screen p-6 items-center">
-      <Features />
-      {children}
-    </div>
-  );
-}
 
-function Features() {
+export function Features() {
   return (
     <div className="flex flex-col px-7">
       <Logo />
@@ -43,7 +35,6 @@ function Features() {
     </div>
   );
 }
-
 // eslint-disable-next-line
 function FeaturesCard({ data, icon: Icon }) {
   return (
