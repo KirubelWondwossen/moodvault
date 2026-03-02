@@ -7,6 +7,7 @@ import AuthLayout from "../components/Layout/AuthLayout";
 import { Lock, Mail, UserRoundPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import LabelInput from "../components/ui/LabelInput";
+import Button from "../components/ui/Button";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -87,9 +88,9 @@ export default function Signup() {
             Minimum length is 8 characters
           </p>
         </div>
-        <button className="bg-primary hover:bg-secondary transition duration-200">
+        <Button className="bg-primary hover:bg-secondary transition duration-200">
           Create account
-        </button>
+        </Button>
         <span className="text-center">
           Already have an account?{" "}
           <Link className="text-primary font-semibold" to={"/"}>

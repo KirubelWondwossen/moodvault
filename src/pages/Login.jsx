@@ -5,6 +5,7 @@ import { Lock, Mail } from "lucide-react";
 import LabelInput from "../components/ui/LabelInput";
 import AuthLayout from "../components/Layout/AuthLayout";
 import { Link } from "react-router-dom";
+import Button from "../components/ui/Button";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -40,7 +41,7 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           icon={Lock}
         />
-        <button>Login</button>
+        <Button>Login</Button>
         <span className="text-center">
           Don't have an account?{" "}
           <Link className="text-primary font-semibold" to={"/signup"}>
