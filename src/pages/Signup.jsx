@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from "../lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import AuthLayout from "../components/Layout/AuthLayout";
-import { Eye, EyeOff, Lock, Mail, UserRoundPlus } from "lucide-react";
+import { Lock, Mail, UserRoundPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import LabelInput from "../components/ui/LabelInput";
 
