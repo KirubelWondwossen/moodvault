@@ -7,31 +7,41 @@ import AuthLayout from "../components/Layout/AuthLayout";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
 import { ClipLoader } from "react-spinners";
-
-function LoadingComponent({ loading }) {
-  return (
-    <div className="flex justify-center items-center h-64">
-      <ClipLoader
-        color="#4F46E5"
-        loading={loading}
-        size={50}
-        aria-label="Loading Spinner"
-      />
-    </div>
-  );
-}
+import { useNavigate, Navigate } from "react-router-dom";
+import { Toaster, toast } from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  // if (user) return <Navigate to="/home" />;
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    await signInWithEmailAndPassword(auth, email, password);
+    if (!email || !password) {
+      return toast.error("Email and password are required");
+    }
+
+    setLoading(true);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success("Login successfull");
+      setLoading(false);
+      setTimeout(() => navigate("/home"), 1000);
+    } catch (error) {
+      console.error(error.message);
+      toast.error(error.message);
+      setLoading(false);
+    }
   };
 
   return (
     <AuthLayout>
+      <Toaster position="top-center" />
       <form
         onSubmit={handleLogin}
         className="flex flex-col gap-8 p-10 bg-[#191d23]/60 rounded-md shadow-md"
@@ -40,6 +50,7 @@ export default function Login() {
           Log in to Your Account
         </h2>
         <LabelInput
+          required
           label={"Email"}
           placeholder="Email"
           type="email"
@@ -48,6 +59,7 @@ export default function Login() {
           icon={Mail}
         />
         <LabelInput
+          required
           label={"Password"}
           placeholder="Password"
           type="password"
@@ -55,7 +67,7 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           icon={Lock}
         />
-        <Button>
+        <Button type="submit">
           {!loading && "Log in"}
           {loading && <ClipLoader color="#fff" loading={loading} size={20} />}
         </Button>

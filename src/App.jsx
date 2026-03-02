@@ -7,17 +7,57 @@ import Explore from "./pages/Explore";
 import Detail from "./pages/Detail";
 import MyList from "./pages/MyList";
 import Profile from "./pages/Profile";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/explore" element={<Explore />} />
-      <Route path="/explore/:id" element={<Detail />} />
-      <Route path="/my-list" element={<MyList />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/explore"
+        element={
+          <ProtectedRoute>
+            <Explore />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/explore/:id"
+        element={
+          <ProtectedRoute>
+            <Detail />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/my-list"
+        element={
+          <ProtectedRoute>
+            <MyList />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
