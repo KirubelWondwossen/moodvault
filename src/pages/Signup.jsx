@@ -3,6 +3,7 @@ import { auth } from "../lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from "../lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+
 // UI
 import AuthLayout from "../components/Layout/AuthLayout";
 import { Lock, Mail, UserRoundPlus } from "lucide-react";
@@ -50,6 +51,8 @@ export default function Signup() {
       toast.success("Account created successfully");
       setTimeout(() => navigate("/"), 1000);
     } catch (error) {
+      console.log(error.message);
+
       console.error(error.message);
       toast.error(error.message);
       setLoading(false);

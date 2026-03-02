@@ -7,17 +7,17 @@ import AuthLayout from "../components/Layout/AuthLayout";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
 import { ClipLoader } from "react-spinners";
-import { useNavigate, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
   const { user } = useAuth();
-  // if (user) return <Navigate to="/home" />;
+  if (user) return <Navigate to="/home" />;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -31,7 +31,6 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       toast.success("Login successfull");
       setLoading(false);
-      setTimeout(() => navigate("/home"), 1000);
     } catch (error) {
       console.error(error.message);
       toast.error(error.message);
