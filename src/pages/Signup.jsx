@@ -5,6 +5,7 @@ import { db } from "../lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import AuthLayout from "../components/AuthLayout";
 import { Eye, EyeOff, Lock, Mail, UserRoundPlus } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -31,8 +32,11 @@ export default function Signup() {
     <AuthLayout>
       <form
         onSubmit={handleSignup}
-        className="w-full flex flex-col gap-4 p-4 bg-[#0C1016]"
+        className="flex flex-col gap-8 p-10 bg-[#191d23]/60 rounded-md shadow-md"
       >
+        <h2 className="font-heading font-semibold text-2xl text-center">
+          Create Your Account
+        </h2>
         <div className="flex gap-2">
           <LabelInput
             type="text"
@@ -59,25 +63,38 @@ export default function Signup() {
           onChange={(e) => setEmail(e.target.value)}
           icon={Mail}
         />
-        <div className="flex gap-2">
-          <LabelInput
-            label={"Password"}
-            placeholder="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            icon={Lock}
-          />
-          <LabelInput
-            label={"Confirm Password"}
-            placeholder="Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            icon={Lock}
-          />
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-2">
+            <LabelInput
+              label={"Password"}
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              icon={Lock}
+            />
+            <LabelInput
+              label={"Confirm Password"}
+              placeholder="Password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              icon={Lock}
+            />
+          </div>
+          <p className="text-sm text-tTertiary font-body">
+            Minimum length is 8 characters
+          </p>
         </div>
-        <button>Create account</button>
+        <button className="bg-primary hover:bg-secondary transition duration-200">
+          Create account
+        </button>
+        <span className="text-center">
+          Already have an account?{" "}
+          <Link className="text-primary font-semibold" to={"/"}>
+            Login
+          </Link>
+        </span>
       </form>
     </AuthLayout>
   );
@@ -89,22 +106,24 @@ function LabelInput({ icon: Icon, type, label, ...props }) {
   const isPassword = type === "password";
   return (
     <div className="flex flex-col gap-1 w-full relative">
-      {Icon && <Icon className="w-4 absolute bottom-1 left-2" />}
+      {Icon && (
+        <Icon className="w-4 absolute bottom-2 left-2 text-tTertiary z-50" />
+      )}
       {isPassword &&
         (showPass ? (
           <EyeOff
-            className="w-4 absolute bottom-1 right-2 cursor-pointer"
+            className="w-4 absolute bottom-2 right-2 cursor-pointer z-50"
             onClick={handleShowPass}
           />
         ) : (
           <Eye
-            className="w-4 absolute bottom-1 right-2 cursor-pointer"
+            className="w-4 absolute bottom-2 right-2 cursor-pointer z-50"
             onClick={handleShowPass}
           />
         ))}
       <label className="font-semibold font-header">{label}</label>
       <input
-        className="border rounded-sm shadow-sm outline-none border-none font-body focus:outline-primary pl-8 px-2 py-1"
+        className="border bg-[#191d23] rounded-sm shadow-sm outline-none border-none font-body focus:outline-primary pl-8 px-2 py-2 text-tTertiary"
         {...props}
         type={isPassword && showPass ? "text" : type}
       />
