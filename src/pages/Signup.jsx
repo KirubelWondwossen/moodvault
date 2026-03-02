@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from "../lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import AuthLayout from "../components/AuthLayout";
-import { Eye, Lock, Mail, UserRoundPlus } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, UserRoundPlus } from "lucide-react";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -83,18 +83,30 @@ export default function Signup() {
   );
 }
 
-function LabelInput({ icon: Icon, label, ...props }) {
+function LabelInput({ icon: Icon, type, label, ...props }) {
+  const [showPass, setShowPass] = useState(false);
+  const handleShowPass = () => setShowPass(!showPass);
+  const isPassword = type === "password";
   return (
     <div className="flex flex-col gap-1 w-full relative">
       {Icon && <Icon className="w-4 absolute bottom-1 left-2" />}
-
-      {props.type === "password" && (
-        <Eye className="w-4 absolute bottom-1 right-2" />
-      )}
+      {isPassword &&
+        (showPass ? (
+          <EyeOff
+            className="w-4 absolute bottom-1 right-2 cursor-pointer"
+            onClick={handleShowPass}
+          />
+        ) : (
+          <Eye
+            className="w-4 absolute bottom-1 right-2 cursor-pointer"
+            onClick={handleShowPass}
+          />
+        ))}
       <label className="font-semibold font-header">{label}</label>
       <input
         className="border rounded-sm shadow-sm outline-none border-none font-body focus:outline-primary pl-8 px-2 py-1"
         {...props}
+        type={isPassword && showPass ? "text" : type}
       />
     </div>
   );
