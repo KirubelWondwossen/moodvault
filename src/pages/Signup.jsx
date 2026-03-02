@@ -8,6 +8,7 @@ import { Lock, Mail, UserRoundPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import LabelInput from "../components/ui/LabelInput";
 import Button from "../components/ui/Button";
+import { ClipLoader } from "react-spinners";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -89,7 +91,8 @@ export default function Signup() {
           </p>
         </div>
         <Button className="bg-primary hover:bg-secondary transition duration-200">
-          Create account
+          {!loading && "Create account"}
+          {loading && <ClipLoader color="#fff" loading={loading} size={20} />}
         </Button>
         <span className="text-center">
           Already have an account?{" "}

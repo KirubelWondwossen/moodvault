@@ -6,10 +6,24 @@ import LabelInput from "../components/ui/LabelInput";
 import AuthLayout from "../components/Layout/AuthLayout";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
+import { ClipLoader } from "react-spinners";
 
+function LoadingComponent({ loading }) {
+  return (
+    <div className="flex justify-center items-center h-64">
+      <ClipLoader
+        color="#4F46E5"
+        loading={loading}
+        size={50}
+        aria-label="Loading Spinner"
+      />
+    </div>
+  );
+}
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -41,7 +55,10 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           icon={Lock}
         />
-        <Button>Login</Button>
+        <Button>
+          {!loading && "Log in"}
+          {loading && <ClipLoader color="#fff" loading={loading} size={20} />}
+        </Button>
         <span className="text-center">
           Don't have an account?{" "}
           <Link className="text-primary font-semibold" to={"/signup"}>
