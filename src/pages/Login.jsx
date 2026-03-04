@@ -43,9 +43,9 @@ export default function Login() {
       <Toaster position="top-center" />
       <form
         onSubmit={handleLogin}
-        className="flex flex-col gap-8 p-10 bg-[#191d23]/60 rounded-md shadow-md"
+        className="flex flex-col gap-6 md:gap-8 md:p-10 p-6 bg-[#191d23]/60 rounded-md shadow-md"
       >
-        <h2 className="font-heading font-semibold text-2xl text-center">
+        <h2 className="font-heading font-semibold text-xl md:text-2xl text-center">
           Log in to Your Account
         </h2>
         <LabelInput

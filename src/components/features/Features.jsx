@@ -26,7 +26,7 @@ const feats = [
 
 export function Features() {
   return (
-    <div className="flex flex-col px-7">
+    <div className="lg:flex flex-col px-7 hidden">
       <Logo />
       <h1 className="font-header font-bold text-4xl">Core Features</h1>
       {feats.map((feature, index) => (

@@ -13,6 +13,7 @@ import Button from "../components/ui/Button";
 import { ClipLoader } from "react-spinners";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Logo from "../components/ui/Logo";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -64,13 +65,14 @@ export default function Signup() {
       <Toaster position="top-center" />
       <form
         onSubmit={handleSignup}
-        className="flex flex-col gap-8 p-10 bg-[#191d23]/60 rounded-md shadow-md"
+        className="flex flex-col gap-5 md:gap-8 md:p-10 p-5 bg-[#191d23]/60 rounded-md shadow-md"
       >
-        <h2 className="font-heading font-semibold text-2xl text-center">
+        <h2 className="font-heading font-semibold text-xl md:text-2xl text-center">
           Create Your Account
         </h2>
-        <div className="flex gap-2">
+        <div className="flex flex-col md:flex-row gap-2">
           <LabelInput
+            required
             type="text"
             placeholder="First name"
             label={"First Name"}
@@ -78,6 +80,7 @@ export default function Signup() {
             onChange={(e) => setFirstName(e.target.value)}
             icon={UserRoundPlus}
           />
+          <div className="py-1 md:hidden"></div>
           <LabelInput
             required
             type="text"
@@ -97,33 +100,32 @@ export default function Signup() {
           onChange={(e) => setEmail(e.target.value)}
           icon={Mail}
         />
-        <div className="flex flex-col gap-1">
-          <div className="flex gap-2">
-            <LabelInput
-              required
-              label={"Password"}
-              placeholder="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              icon={Lock}
-              min="8"
-            />
-            <LabelInput
-              required
-              label={"Confirm Password"}
-              placeholder="Password"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              icon={Lock}
-              min="8"
-            />
-          </div>
-          <p className="text-sm text-tTertiary font-body">
-            Minimum length is 8 characters
-          </p>
+        <div className="flex flex-col md:flex-row gap-2">
+          <LabelInput
+            required
+            label={"Password"}
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            icon={Lock}
+            min="8"
+          />
+          <div className="py-1 md:hidden"></div>
+          <LabelInput
+            required
+            label={"Confirm Password"}
+            placeholder="Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            icon={Lock}
+            min="8"
+          />
         </div>
+        <p className="text-sm text-tTertiary font-body">
+          Minimum length is 8 characters
+        </p>
         <Button type="submit">
           {!loading && "Create account"}
           {loading && <ClipLoader color="#fff" loading={loading} size={20} />}
