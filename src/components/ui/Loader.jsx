@@ -9,7 +9,7 @@ export function Loader({ loading, page, className }) {
           : `flex flex-col justify-center items-center ${className} gap-2 py-6`
       }
     >
-      <ClipLoader color="#58A6FF" loading={loading} size={40} />
+      <ClipLoader color="#58A6FF" size={40} />
       <span
         className={`text-lg font-heading font-semibold text-primary ${
           page && "ml-3"

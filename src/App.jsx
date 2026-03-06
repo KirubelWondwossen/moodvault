@@ -5,7 +5,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import Detail from "./pages/Detail";
-import MyList from "./pages/MyList";
+import MyVault from "./pages/MyVault";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -45,7 +45,7 @@ function App() {
         path="/my-list"
         element={
           <ProtectedRoute>
-            <MyList />
+            <MyVault />
           </ProtectedRoute>
         }
       />

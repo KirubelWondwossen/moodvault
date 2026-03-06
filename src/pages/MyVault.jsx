@@ -1,4 +1,4 @@
-export default function MyList() {
+export default function MyVault() {
   return (
     <div className="text-5xl font-bold text-center text-white">Hello There</div>
   );

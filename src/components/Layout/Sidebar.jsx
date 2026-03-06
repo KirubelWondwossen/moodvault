@@ -15,7 +15,7 @@ export default function Sidebar() {
   );
 }
 
-function SidebarBtn({ path, icon: Icon, btn }) {
+function SidebarBtn({ icon: Icon, path, btn }) {
   const location = useLocation();
 
   return (
