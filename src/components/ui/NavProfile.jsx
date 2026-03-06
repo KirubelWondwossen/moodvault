@@ -1,9 +1,6 @@
-export default function NavProfile({ user, setShow }) {
+export default function NavProfile({ user }) {
   return (
-    <div
-      className={"gap-2 px-3 flex items-center cursor-pointer"}
-      onMouseEnter={() => setShow(true)}
-    >
+    <div className={"gap-2 px-3 flex items-center cursor-pointer"}>
       <img
         src="/profile-pic.jpg"
         alt="profile picture"
