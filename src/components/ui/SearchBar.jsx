@@ -36,7 +36,7 @@ function SearchBtn({ searchTerm, setSearchTerm }) {
         type="search"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="text-heading pl-9 p-2 focus:outline-none w-64 bg-background border border-borderColor rounded-xl"
+        className="text-heading pl-10 p-2 focus:outline-none w-72 bg-background border border-borderColor rounded-xl"
         placeholder="Search movies, anime, series..."
       />
     </div>
