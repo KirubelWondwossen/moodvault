@@ -46,3 +46,21 @@ export const getTrendingTv = async () => {
   const data = await response.json();
   return data.results;
 };
+
+export async function searchMovies(query) {
+  const res = await fetch(
+    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`,
+  );
+
+  const data = await res.json();
+  return data.results;
+}
+
+export async function searchTV(query) {
+  const res = await fetch(
+    `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}`,
+  );
+
+  const data = await res.json();
+  return data.results;
+}
