@@ -16,7 +16,7 @@ export const getSeasonalAnime = async () => {
 
 export const searchAnime = async (query) => {
   const res = await fetch(`${BASE_URL}/anime?q=${query}`);
-  if (!res.ok) throw new Error("Failed to search anime");
+  if (!res.ok) throw new Error("Failed to search anime try another");
   const data = await res.json();
   return data.data;
 };
