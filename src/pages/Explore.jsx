@@ -8,12 +8,8 @@ import {
 import { getSeasonalAnime, getTopAnime } from "../services/jikan";
 import { Loader } from "../components/ui/Loader";
 import MainLayout from "../components/Layout/MainLayout";
-import {
-  normalizeMovie,
-  normalizeTV,
-  normalizeAnime,
-} from "../utils/normalizeMedia";
-import { useMemo } from "react";
+import { useCombinedMedia } from "../hooks/useCombinedMedia";
+import { useAnimeList } from "../hooks/useAnimeList";
 
 export default function Explore() {
   const results = useQueries({
@@ -28,7 +24,7 @@ export default function Explore() {
   });
 
   const [
-    trendingMoviesQuery,
+    trendingMovieQuery,
     topAnimeQuery,
     currentAnimeQuery,
     popularMoviesQuery,
@@ -36,41 +32,13 @@ export default function Explore() {
     trendingTvQuery,
   ] = results;
 
-  const trendingMovieTv = useMemo(() => {
-    const movies = trendingMoviesQuery.data ?? [];
-    const tv = trendingTvQuery.data ?? [];
+  const trendingMovieTv = useCombinedMedia(trendingMovieQuery, trendingTvQuery);
 
-    return [...movies.map(normalizeMovie), ...tv.map(normalizeTV)].sort(
-      (a, b) => (b.rating ?? 0) - (a.rating ?? 0),
-    );
-  }, [trendingMoviesQuery.data, trendingTvQuery.data]);
+  const popularMovieTv = useCombinedMedia(popularMoviesQuery, popularTvQuery);
 
-  const popularMovieTv = useMemo(() => {
-    const movies = popularMoviesQuery.data ?? [];
-    const tv = popularTvQuery.data ?? [];
+  const topAnime = useAnimeList(topAnimeQuery);
 
-    return [...movies.map(normalizeMovie), ...tv.map(normalizeTV)].sort(
-      (a, b) => (b.rating ?? 0) - (a.rating ?? 0),
-    );
-  }, [popularMoviesQuery.data, popularTvQuery.data]);
-
-  const topAnime = useMemo(() => {
-    const anime = topAnimeQuery.data || [];
-    return [
-      ...anime
-        .map(normalizeAnime)
-        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)),
-    ];
-  }, [topAnimeQuery.data]);
-
-  const trendingAnime = useMemo(() => {
-    const anime = currentAnimeQuery.data || [];
-    return [
-      ...anime
-        .map(normalizeAnime)
-        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)),
-    ];
-  }, [currentAnimeQuery.data]);
+  const trendingAnime = useAnimeList(currentAnimeQuery);
 
   return (
     <MainLayout>
@@ -107,32 +75,8 @@ function MovieCard({ data }) {
       <img src={data.poster} alt={data.title} className="rounded-lg" />
       <h3 className="mt-2 text-sm font-medium">{data.title}</h3>
       <p className="text-xs text-gray-400">
-        ⭐ {data.rating && data.rating !== 0 ? data.rating : "N/A"}
+        ⭐ {data.rating && data.rating !== 0 ? data.rating.toFixed(1) : "N/A"}
       </p>
-    </div>
-  );
-}
-
-function AnimeCards({ data }) {
-  return (
-    <div className="flex flex-wrap gap-4">
-      {data.map((anime) => (
-        <AnimeCard anime={anime} />
-      ))}
-    </div>
-  );
-}
-
-function AnimeCard({ anime }) {
-  return (
-    <div key={anime.mal_id} className="w-40">
-      <img
-        src={anime.images?.jpg?.image_url}
-        alt={anime.title}
-        className="rounded-lg"
-      />
-      <h3 className="mt-2 text-sm font-medium">{anime.title}</h3>
-      <p className="text-xs text-gray-400">⭐ {anime.score ?? "N/A"}</p>
     </div>
   );
 }

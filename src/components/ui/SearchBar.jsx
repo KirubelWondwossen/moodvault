@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import SearchResult from "./SearchResult";
 import { useQuery } from "@tanstack/react-query";
-import useDebounce from "../hooks/useDebounce";
+import useDebounce from "../../hooks/useDebounce";
 import { searchAll } from "../../services/search";
 import { useState } from "react";
 
