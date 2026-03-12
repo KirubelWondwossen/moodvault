@@ -3,10 +3,17 @@ import {
   getPopularMovies,
   getPopularTv,
   getTrendingMovies,
+  getTrendingTv,
 } from "../services/tmdb";
 import { getSeasonalAnime, getTopAnime } from "../services/jikan";
 import { Loader } from "../components/ui/Loader";
 import MainLayout from "../components/Layout/MainLayout";
+import {
+  normalizeMovie,
+  normalizeTV,
+  normalizeAnime,
+} from "../utils/normalizeMedia";
+import { useMemo } from "react";
 
 export default function Explore() {
   const results = useQueries({
@@ -16,23 +23,54 @@ export default function Explore() {
       { queryKey: ["currentAnime"], queryFn: getSeasonalAnime },
       { queryKey: ["popularMovies"], queryFn: getPopularMovies },
       { queryKey: ["popularTv"], queryFn: getPopularTv },
+      { queryKey: ["trendingTv"], queryFn: getTrendingTv },
     ],
   });
 
   const [
-    moviesQuery,
+    trendingMoviesQuery,
     topAnimeQuery,
     currentAnimeQuery,
     popularMoviesQuery,
     popularTvQuery,
+    trendingTvQuery,
   ] = results;
 
-  const movies = moviesQuery.data || [];
-  const anime = currentAnimeQuery.data || [];
-  const topAnime = topAnimeQuery.data || [];
-  const popularMovies = popularMoviesQuery.data || [];
-  const popularTv = popularTvQuery.data || [];
-  console.log(movies);
+  const trendingMovieTv = useMemo(() => {
+    const movies = trendingMoviesQuery.data ?? [];
+    const tv = trendingTvQuery.data ?? [];
+
+    return [...movies.map(normalizeMovie), ...tv.map(normalizeTV)].sort(
+      (a, b) => (b.rating ?? 0) - (a.rating ?? 0),
+    );
+  }, [trendingMoviesQuery.data, trendingTvQuery.data]);
+
+  const popularMovieTv = useMemo(() => {
+    const movies = popularMoviesQuery.data ?? [];
+    const tv = popularTvQuery.data ?? [];
+
+    return [...movies.map(normalizeMovie), ...tv.map(normalizeTV)].sort(
+      (a, b) => (b.rating ?? 0) - (a.rating ?? 0),
+    );
+  }, [popularMoviesQuery.data, popularTvQuery.data]);
+
+  const topAnime = useMemo(() => {
+    const anime = topAnimeQuery.data || [];
+    return [
+      ...anime
+        .map(normalizeAnime)
+        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)),
+    ];
+  }, [topAnimeQuery.data]);
+
+  const trendingAnime = useMemo(() => {
+    const anime = currentAnimeQuery.data || [];
+    return [
+      ...anime
+        .map(normalizeAnime)
+        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)),
+    ];
+  }, [currentAnimeQuery.data]);
 
   return (
     <MainLayout>
@@ -42,7 +80,7 @@ export default function Explore() {
         <div className="flex flex-col overflow-x-auto pb-4 scrollbar-hide pl-8">
           <h2 className="text-xl font-semibold mb-3">Trending Movies</h2>
           <div className="flex gap-4">
-            <MovieCards data={movies} />
+            <MovieCards data={trendingMovieTv} />
           </div>
         </div>
       )}
@@ -53,24 +91,23 @@ export default function Explore() {
 function MovieCards({ data }) {
   return (
     <div className="flex flex-wrap gap-4">
-      {data.map((movie) => (
-        <MovieCard movie={movie} />
-      ))}
+      {[...data]
+        .sort((a, b) => b.rating - a.rating)
+        .map((movie) => (
+          <MovieCard key={movie.id} data={movie} />
+        ))}
     </div>
   );
 }
 
-function MovieCard({ movie }) {
+function MovieCard({ data }) {
+  if (!data) return null;
   return (
-    <div key={movie.id} className="w-40">
-      <img
-        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-        alt={movie.title}
-        className="rounded-lg"
-      />
-      <h3 className="mt-2 text-sm font-medium">{movie.title}</h3>
+    <div key={data.id} className="w-40">
+      <img src={data.poster} alt={data.title} className="rounded-lg" />
+      <h3 className="mt-2 text-sm font-medium">{data.title}</h3>
       <p className="text-xs text-gray-400">
-        ⭐ {movie.vote_average?.toFixed(1)}
+        ⭐ {data.rating && data.rating !== 0 ? data.rating : "N/A"}
       </p>
     </div>
   );
