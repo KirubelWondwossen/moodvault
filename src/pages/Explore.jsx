@@ -32,6 +32,8 @@ export default function Explore() {
   const topAnime = topAnimeQuery.data || [];
   const popularMovies = popularMoviesQuery.data || [];
   const popularTv = popularTvQuery.data || [];
+  console.log(movies);
+
   return (
     <MainLayout>
       <h1 className="text-2xl font-bold mb-4">Explore</h1>

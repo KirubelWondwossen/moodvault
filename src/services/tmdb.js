@@ -37,10 +37,12 @@ export const getPopularTv = async () => {
 };
 
 export const getTrendingTv = async () => {
-  const response = await fetch(`${BASE_URL}/tv/trending?api_key=${API_KEY}`);
+  const response = await fetch(
+    `${BASE_URL}/trending/tv/day?api_key=${API_KEY}`,
+  );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch trending movies");
+    throw new Error("Failed to fetch trending TV shows");
   }
 
   const data = await response.json();
