@@ -20,7 +20,7 @@ export default function SearchBar() {
   const isLoading = debouncedSearch && searchQuery.isLoading;
 
   return (
-    <div className="relative px-5 w-full">
+    <div className="relative w-full">
       <SearchBtn searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <SearchResult results={results} isLoading={isLoading} />
     </div>

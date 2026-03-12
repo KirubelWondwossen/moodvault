@@ -10,7 +10,7 @@ export default function Navbar() {
   const timeoutRef = useRef(null);
 
   return (
-    <nav className="flex justify-between w-full px-2 py-4 relative">
+    <nav className="flex justify-between py-4 relative w-full">
       <SearchBar />
 
       <div

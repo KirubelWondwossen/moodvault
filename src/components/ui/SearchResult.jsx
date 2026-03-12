@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function SearchResult({ results, isLoading }) {
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-2 max-h-[25rem] overflow-y-auto shadow-md p-3 rounded-md bg-[#191d23] absolute mt-2 w-full">
+      <div className="flex flex-col gap-2 max-h-[25rem] overflow-y-auto shadow-md p-3 rounded-md bg-[#191d23] absolute mt-2">
         {Array.from({ length: 6 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -55,7 +55,6 @@ function SkeletonCard() {
   return (
     <div className="p-2 flex items-center gap-4 w-full animate-pulse">
       <div className="w-12 aspect-[2/3] rounded-md bg-gray-600" />
-
       <div className="flex flex-col gap-2 flex-1">
         <div className="h-3 w-32 bg-gray-600 rounded" />
         <div className="h-3 w-16 bg-gray-600 rounded" />

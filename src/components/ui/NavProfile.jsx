@@ -1,6 +1,6 @@
 export default function NavProfile({ user }) {
   return (
-    <div className={"gap-2 px-3 flex items-center cursor-pointer"}>
+    <div className={"gap-2 px-4 flex items-center cursor-pointer"}>
       <img
         src="/profile-pic.jpg"
         alt="profile picture"

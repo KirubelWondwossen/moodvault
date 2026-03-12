@@ -4,7 +4,7 @@ import { Home, Compass, Bookmark, User } from "lucide-react";
 
 export default function Sidebar() {
   return (
-    <aside className="w-44 flex flex-col items-center gap-2 border-r border-borderColor h-screen overflow-hidden">
+    <aside className="w-50 flex flex-col items-center gap-2 border-r border-borderColor h-screen overflow-hidden">
       <Logo className={"pt-2 px-2 self-start"} />
       <SidebarBtn path={"/home"} icon={Home} btn={"Home"} />
       <SidebarBtn path={"/explore"} icon={Compass} btn={"Explore"} />
