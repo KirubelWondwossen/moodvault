@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import MovieCard from "../ui/MovieCard";
+import { Link } from "react-router-dom";
 
-export default function CardContainer({ data }) {
+export default function CardContainer({ data, title, link }) {
   const [visibleCards, setVisibleCards] = useState(6);
 
   useEffect(() => {
@@ -22,12 +23,23 @@ export default function CardContainer({ data }) {
   }, []);
 
   return (
-    <div className="relative w-full overflow-hidden h-80">
-      <div className="flex gap-4">
-        {data.slice(0, visibleCards).map((movie) => (
-          <MovieCard key={movie.id} data={movie} />
-        ))}
+    <section className="flex flex-col w-full gap-1">
+      <div className="flex justify-between w-full items-center">
+        <h2 className="text-2xl font-semibold">{title}</h2>
+        <Link
+          to={link}
+          className="text-primary underline underline-offset-4 font-heading"
+        >
+          See More →
+        </Link>
       </div>
-    </div>
+      <div className="relative w-full overflow-hidden">
+        <div className="flex gap-4 items-center">
+          {data.slice(0, visibleCards).map((movie) => (
+            <MovieCard key={movie.id} data={movie} />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

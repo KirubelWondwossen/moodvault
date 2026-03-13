@@ -10,11 +10,12 @@ export default function Sidebar() {
       <SidebarBtn path={"/explore"} icon={Compass} btn={"Explore"} />
       <SidebarBtn path={"/myvalut"} icon={Bookmark} btn={"MyVault"} />
       <SidebarBtn path={"/profile"} icon={User} btn={"Profile"} />
-      <Border />
+      <SectionBreak />
     </aside>
   );
 }
 
+// eslint-disable-next-line
 function SidebarBtn({ icon: Icon, path, btn }) {
   const location = useLocation();
 
@@ -35,7 +36,6 @@ function SidebarBtn({ icon: Icon, path, btn }) {
     </Link>
   );
 }
-
-function Border() {
+function SectionBreak() {
   return <span className="border-b border-borderColor px-16 py-2"></span>;
 }

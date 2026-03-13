@@ -2,18 +2,17 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
-export default function MainLayout({ children }) {
+export default function MainLayout({ children, title }) {
   return (
     <div className="flex h-screen overflow-hidden">
       <Toaster position="top-center" />
-
-      {/* Sidebar */}
       <Sidebar />
-
-      {/* Main content */}
-      <div className="flex flex-col flex-1 px-4 overflow-hidden">
+      <div className="flex flex-col flex-1 px-4">
         <Navbar />
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <h1 className="text-2xl font-bold mb-4">{title}</h1>
+        <div className="flex-1 overflow-y-auto scrollbar-hide px-4">
+          {children}
+        </div>
       </div>
     </div>
   );
