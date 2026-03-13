@@ -4,14 +4,16 @@ import Sidebar from "./Sidebar";
 
 export default function MainLayout({ children }) {
   return (
-    <div className="flex h-screen overflow-hidden w-screen justify-center">
+    <div className="flex h-screen overflow-hidden">
       <Toaster position="top-center" />
-      <div className="w-1/5 h-full">
-        <Sidebar />
-      </div>
-      <div className="flex flex-col w-full px-4">
+
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main content */}
+      <div className="flex flex-col flex-1 px-4 overflow-hidden">
         <Navbar />
-        {children}
+        <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
     </div>
   );
