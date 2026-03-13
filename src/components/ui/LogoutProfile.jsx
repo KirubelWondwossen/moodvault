@@ -14,7 +14,7 @@ export default function LogoutProfile({ user }) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 w-60 shadow-md p-3 rounded-md bg-[#191d23] absolute right-0 top-full mt-2">
+    <div className="flex flex-col z-50 items-center gap-2 w-60 shadow-md p-3 rounded-md bg-[#191d23] absolute right-0 top-full mt-2">
       <img
         src="/profile-pic.jpg"
         alt="profile picture"

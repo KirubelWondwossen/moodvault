@@ -8,6 +8,7 @@ import Detail from "./pages/Detail";
 import MyVault from "./pages/MyVault";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import MoreExplore from "./pages/MoreExplore";
 
 function App() {
   return (
@@ -28,6 +29,15 @@ function App() {
         element={
           <ProtectedRoute>
             <Explore />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/explore/:type"
+        element={
+          <ProtectedRoute>
+            <MoreExplore />
           </ProtectedRoute>
         }
       />

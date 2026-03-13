@@ -27,7 +27,7 @@ export default function CardContainer({ data, title, link }) {
       <div className="flex justify-between w-full items-center">
         <h2 className="text-2xl font-semibold">{title}</h2>
         <Link
-          to={link}
+          to={`/explore/${link}`}
           className="text-primary underline underline-offset-4 font-heading"
         >
           See More →

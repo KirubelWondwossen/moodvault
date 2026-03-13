@@ -44,7 +44,11 @@ export default function Explore() {
       {results.some((q) => q.isLoading) && <Loader />}
       {!results.some((q) => q.isLoading) && (
         <div className="flex flex-col items-center gap-6 mb-8 ">
-          <CardContainer data={trendingMovieTv} title={"Trending Movie & Tv"} />
+          <CardContainer
+            data={trendingMovieTv}
+            title={"Trending Movie & Tv"}
+            link={"trending-movie-tv"}
+          />
           <SectionBreak />
           <CardContainer data={trendingAnime} title={"Trending Anime"} />
           <SectionBreak />
