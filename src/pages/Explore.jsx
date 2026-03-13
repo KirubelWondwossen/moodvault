@@ -11,6 +11,7 @@ import MainLayout from "../components/Layout/MainLayout";
 import { useCombinedMedia } from "../hooks/useCombinedMedia";
 import { useAnimeList } from "../hooks/useAnimeList";
 import CardContainer from "../components/Layout/CardContainer";
+import { SectionBreak } from "../components/ui/SectionBreak";
 
 export default function Explore() {
   const results = useQueries({
@@ -39,15 +40,17 @@ export default function Explore() {
   const trendingAnime = useAnimeList(currentAnimeQuery);
 
   return (
-    <MainLayout>
-      <h1 className="text-2xl font-bold mb-4">Explore</h1>
+    <MainLayout title={"Explore"}>
       {results.some((q) => q.isLoading) && <Loader />}
       {!results.some((q) => q.isLoading) && (
-        <div className="flex flex-col pb-4 pl-8">
-          <h2 className="text-xl font-semibold mb-3">Trending Movies</h2>
-          <div className="w-full">
-            <CardContainer data={trendingMovieTv} />
-          </div>
+        <div className="flex flex-col items-center gap-6 mb-8 ">
+          <CardContainer data={trendingMovieTv} title={"Trending Movie & Tv"} />
+          <SectionBreak />
+          <CardContainer data={trendingAnime} title={"Trending Anime"} />
+          <SectionBreak />
+          <CardContainer data={popularMovieTv} title={"Popular Movie & Tv"} />
+          <SectionBreak />
+          <CardContainer data={topAnime} title={"Top Animes"} />
         </div>
       )}
     </MainLayout>
