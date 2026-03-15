@@ -50,11 +50,23 @@ export default function Explore() {
             link={"trending-movie-tv"}
           />
           <SectionBreak />
-          <CardContainer data={trendingAnime} title={"Trending Anime"} />
+          <CardContainer
+            data={trendingAnime}
+            title={"Trending Anime"}
+            link={"trending-anime"}
+          />
           <SectionBreak />
-          <CardContainer data={popularMovieTv} title={"Popular Movie & Tv"} />
+          <CardContainer
+            data={popularMovieTv}
+            title={"Popular Movie & Tv"}
+            link={"popular-movie-tv"}
+          />
           <SectionBreak />
-          <CardContainer data={topAnime} title={"Top Animes"} />
+          <CardContainer
+            data={topAnime}
+            title={"Top Animes"}
+            link={"top-anime"}
+          />
         </div>
       )}
     </MainLayout>

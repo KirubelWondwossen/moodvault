@@ -5,13 +5,13 @@ export default function MovieCard({ data }) {
   if (!data) return null;
   return (
     <Link
-      to=""
+      to={`/details/${data.type}/${data.id}`}
       className="group block w-full max-w-[190px] transition-transform duration-300"
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl shadow-sm">
         <img
-          src={data.poster}
-          alt={data.title}
+          src={data.poster || "/no-image.png"}
+          alt={data.title || "No title"}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
 

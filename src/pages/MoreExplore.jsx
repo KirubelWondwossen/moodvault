@@ -1,5 +1,33 @@
+import { useParams } from "react-router-dom";
 import MainLayout from "../components/Layout/MainLayout";
+import MovieCard from "../components/ui/MovieCard";
+import { useSeeMore } from "../hooks/useSeeMore";
+import { SkeletonGrid } from "../components/ui/SkeletonGrid";
+
+const titles = {
+  "trending-movie-tv": "Trending Movies & TV",
+  "popular-movie-tv": "Popular Movies & TV",
+  "top-anime": "Top Animes",
+  "trending-anime": "Trending Animes",
+};
 
 export default function MoreExplore() {
-  return <MainLayout title={""}></MainLayout>;
+  const { type } = useParams();
+  const { data, isLoading } = useSeeMore(type);
+  return (
+    <MainLayout title={titles[type]}>
+      {isLoading && <SkeletonGrid count={12} />}
+      {!isLoading && <CardContainer data={data} />}
+    </MainLayout>
+  );
+}
+
+function CardContainer({ data }) {
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      {data.map((element) => (
+        <MovieCard data={element} key={element.id} />
+      ))}
+    </div>
+  );
 }

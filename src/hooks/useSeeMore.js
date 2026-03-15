@@ -47,20 +47,26 @@ export function useSeeMore(type) {
 
   const [
     trendingMovieQuery,
-    topAnimeQuery,
-    currentAnimeQuery,
+    trendingTvQuery,
     popularMoviesQuery,
     popularTvQuery,
-    trendingTvQuery,
+    topAnimeQuery,
+    currentAnimeQuery,
   ] = results;
+
+  const isLoading = results.some((query) => query.isLoading);
 
   const trendingMovieTv = useCombinedMedia(trendingMovieQuery, trendingTvQuery);
   const popularMovieTv = useCombinedMedia(popularMoviesQuery, popularTvQuery);
   const topAnime = useAnimeList(topAnimeQuery);
   const trendingAnime = useAnimeList(currentAnimeQuery);
 
-  if (type === "trending-movie-tv") return trendingMovieTv;
-  if (type === "popular-movie-tv") return popularMovieTv;
-  if (type === "trending-anime") return trendingAnime;
-  if (type === "top-anime") return topAnime;
+  let data = null;
+
+  if (type === "trending-movie-tv") data = trendingMovieTv;
+  if (type === "popular-movie-tv") data = popularMovieTv;
+  if (type === "trending-anime") data = trendingAnime;
+  if (type === "top-anime") data = topAnime;
+
+  return { data, isLoading };
 }
