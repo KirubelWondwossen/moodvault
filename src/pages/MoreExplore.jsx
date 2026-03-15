@@ -3,12 +3,13 @@ import MainLayout from "../components/Layout/MainLayout";
 import MovieCard from "../components/ui/MovieCard";
 import { useSeeMore } from "../hooks/useSeeMore";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
+import { SectionBreak } from "../components/ui/SectionBreak";
 
 const titles = {
   "trending-movie-tv": "Trending Movies & TV",
   "popular-movie-tv": "Popular Movies & TV",
   "top-anime": "Top Animes",
-  "trending-anime": "Trending Animes",
+  "trending-anime": "Currently Airing Anime",
 };
 
 export default function MoreExplore() {
@@ -24,7 +25,7 @@ export default function MoreExplore() {
 
 function CardContainer({ data }) {
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-wrap items-center gap-4 mb-8">
       {data.map((element) => (
         <MovieCard data={element} key={element.id} />
       ))}

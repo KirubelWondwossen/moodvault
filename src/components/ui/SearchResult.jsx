@@ -29,7 +29,7 @@ export default function SearchResult({ results, isLoading }) {
 function ResultCard({ data }) {
   return (
     <Link
-      to=""
+      to={`/details/${data.type}/${data.id}`}
       className="p-2 flex items-center gap-4 hover:bg-borderColor rounded-md w-full"
     >
       <img

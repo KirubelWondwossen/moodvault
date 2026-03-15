@@ -23,7 +23,7 @@ export default function CardContainer({ data, title, link }) {
   }, []);
 
   return (
-    <section className="flex flex-col w-full gap-1">
+    <section className="flex flex-col w-full gap-2">
       <div className="flex justify-between w-full items-center">
         <h2 className="text-2xl font-semibold">{title}</h2>
         <Link

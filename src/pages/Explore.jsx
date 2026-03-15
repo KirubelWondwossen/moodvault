@@ -12,6 +12,7 @@ import { useCombinedMedia } from "../hooks/useCombinedMedia";
 import { useAnimeList } from "../hooks/useAnimeList";
 import CardContainer from "../components/Layout/CardContainer";
 import { SectionBreak } from "../components/ui/SectionBreak";
+import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 
 export default function Explore() {
   const results = useQueries({
@@ -41,24 +42,24 @@ export default function Explore() {
 
   return (
     <MainLayout title={"Explore"}>
-      {results.some((q) => q.isLoading) && <Loader />}
+      {results.some((q) => q.isLoading) && <SkeletonGrid count={10} />}
       {!results.some((q) => q.isLoading) && (
         <div className="flex flex-col items-center gap-6 mb-8 ">
           <CardContainer
             data={trendingMovieTv}
-            title={"Trending Movie & Tv"}
+            title={"Trending Movie & TV"}
             link={"trending-movie-tv"}
           />
           <SectionBreak />
           <CardContainer
             data={trendingAnime}
-            title={"Trending Anime"}
+            title={"Currently Airing Anime"}
             link={"trending-anime"}
           />
           <SectionBreak />
           <CardContainer
             data={popularMovieTv}
-            title={"Popular Movie & Tv"}
+            title={"Popular Movie & TV"}
             link={"popular-movie-tv"}
           />
           <SectionBreak />
