@@ -21,6 +21,17 @@ export const searchAnime = async (query) => {
   return data.data;
 };
 
+export const getAnimeDetails = async (animeId) => {
+  const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch anime details");
+  }
+
+  const data = await res.json();
+  return data.data;
+};
+
 // end points
 /**
  * /seasons/now

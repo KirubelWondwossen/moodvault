@@ -43,7 +43,7 @@ function App() {
       />
 
       <Route
-        path="/explore/:id"
+        path="/details/:type/:id"
         element={
           <ProtectedRoute>
             <Detail />

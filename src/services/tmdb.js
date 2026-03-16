@@ -66,3 +66,29 @@ export async function searchTV(query) {
   const data = await res.json();
   return data.results;
 }
+
+export const getMovieDetails = async (movieId) => {
+  const res = await fetch(
+    `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&append_to_response=credits,videos`,
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch movie details");
+  }
+
+  const data = await res.json();
+  return data;
+};
+
+export const getTvDetails = async (tvId) => {
+  const res = await fetch(
+    `${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&append_to_response=credits,videos`,
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch tv show details");
+  }
+
+  const data = await res.json();
+  return data;
+};
