@@ -1,6 +1,11 @@
 import { useQueries } from "@tanstack/react-query";
 import { getMovieDetails, getTvDetails } from "../services/tmdb";
 import { getAnimeDetails } from "../services/jikan";
+import {
+  normalizeAnimeDetail,
+  normalizeMovieDetail,
+  normalizeTVDetail,
+} from "../utils/normalizeMedia";
 
 export function useGetDetail(type, id) {
   const results = useQueries({
@@ -29,9 +34,9 @@ export function useGetDetail(type, id) {
 
   let data = null;
 
-  if (type === "movie") data = movieDetail.data;
-  if (type === "tv") data = tvDetail.data;
-  if (type === "anime") data = animeDetail.data;
+  if (type === "movie") data = normalizeMovieDetail(movieDetail.data);
+  if (type === "tv") data = normalizeTVDetail(tvDetail.data);
+  if (type === "anime") data = normalizeAnimeDetail(animeDetail.data);
 
   return { data, isLoading };
 }
