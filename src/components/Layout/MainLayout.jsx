@@ -22,8 +22,10 @@ export default function MainLayout({ children, title, showSideBar, backdrop }) {
         }
       >
         <Navbar />
-        <h1 className="text-2xl font-bold mb-4">{title}</h1>
-        <div className="flex-1 overflow-y-auto scrollbar-hide px-4">
+        {!backdrop && <h1 className="text-2xl font-bold mb-4">{title}</h1>}
+        <div
+          className={`flex-1 min-h-0 ${!backdrop && "overflow-y-auto scrollbar-hide"} px-4`}
+        >
           {children}
         </div>
       </div>

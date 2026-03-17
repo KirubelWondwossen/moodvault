@@ -1,3 +1,5 @@
+import { formatDuration } from "./formatDuration";
+
 const FALLBACK_POSTER = "https://via.placeholder.com/500x750?text=No+Image";
 const FALLBACK_BACKDROP =
   "https://via.placeholder.com/1280x720?text=No+Backdrop";
@@ -81,7 +83,7 @@ export function normalizeMovieDetail(movie = {}) {
 
     releaseDate: movie?.release_date ?? null,
     status: movie?.status ?? null,
-    duration: movie?.runtime ?? null,
+    duration: formatDuration(movie?.runtime ?? null),
 
     trailer: null,
 
@@ -106,7 +108,7 @@ export function normalizeTVDetail(tv = {}) {
     rating: formatRating(tv?.vote_average),
 
     overview: tv?.overview ?? "No description available",
-
+    duration: formatDuration(tv?.runtime ?? null),
     genres: tv?.genres?.map((g) => g.name) ?? [],
 
     releaseDate: tv?.first_air_date ?? null,
@@ -121,8 +123,8 @@ export function normalizeTVDetail(tv = {}) {
 }
 
 export function normalizeAnimeDetail(anime = {}) {
-  const poster = anime?.images?.jpg?.image_url ?? FALLBACK_POSTER;
-  const backdrop = anime?.images?.jpg?.large_image_url ?? poster;
+  const poster = anime?.images?.jpg?.large_image_url ?? FALLBACK_POSTER;
+  const backdrop = anime?.images?.jpg?.large_image_url ?? FALLBACK_POSTER;
 
   return {
     id: anime?.mal_id ?? null,

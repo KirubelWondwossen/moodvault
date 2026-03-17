@@ -21,6 +21,9 @@ export default {
         heading: ["Poppins", "sans-serif"],
         body: ["Inter", "sans-serif"],
       },
+      boxShadow: {
+        glow: "0 0 25px #58A6FF",
+      },
     },
   },
   plugins: [scrollbarHide],

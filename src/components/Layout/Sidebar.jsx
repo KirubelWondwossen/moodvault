@@ -3,7 +3,7 @@ import Logo from "../ui/Logo";
 import { Home, Compass, Bookmark, User, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function Sidebar({ showSideBar = true }) {
+export default function Sidebar({ showSideBar = false }) {
   const [show, setShow] = useState(showSideBar);
 
   useEffect(() => {

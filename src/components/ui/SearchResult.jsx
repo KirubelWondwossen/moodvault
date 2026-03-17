@@ -13,13 +13,9 @@ export default function SearchResult({ results, isLoading }) {
   }
   if (!results.length) return null;
 
-  const sortedResults = [...results].sort(
-    (a, b) => (b.rating || 0) - (a.rating || 0),
-  );
-
   return (
     <div className="z-50 flex flex-col items-start gap-2 max-h-[25rem] overflow-y-auto shadow-md p-3 rounded-md bg-[#191d23] absolute mt-2">
-      {sortedResults?.map((element) => (
+      {results?.map((element) => (
         <ResultCard key={`${element.source}-${element.id}`} data={element} />
       ))}
     </div>
