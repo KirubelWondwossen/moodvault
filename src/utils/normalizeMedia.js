@@ -57,7 +57,7 @@ export function normalizeMovieDetail(movie = {}) {
       ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
       : FALLBACK_BACKDROP,
 
-    rating: movie?.vote_average ?? 0,
+    rating: movie?.vote_average.toFixed(1) ?? 0,
     overview: movie?.overview ?? "No description available",
 
     genres: movie?.genres?.map((g) => g.name) ?? [],
@@ -86,7 +86,7 @@ export function normalizeTVDetail(tv = {}) {
       ? `https://image.tmdb.org/t/p/original${tv.backdrop_path}`
       : FALLBACK_BACKDROP,
 
-    rating: tv?.vote_average ?? 0,
+    rating: tv?.vote_average.toFixed(1) ?? 0,
     overview: tv?.overview ?? "No description available",
 
     genres: tv?.genres?.map((g) => g.name) ?? [],
@@ -118,7 +118,7 @@ export function normalizeAnimeDetail(anime = {}) {
     poster,
     backdrop: backdrop || FALLBACK_BACKDROP,
 
-    rating: anime?.score ?? 0,
+    rating: anime?.score.toFixed(1) ?? 0,
     overview: anime?.synopsis ?? "No description available",
 
     genres: anime?.genres?.map((g) => g.name) ?? [],

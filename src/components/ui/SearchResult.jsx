@@ -41,7 +41,8 @@ function ResultCard({ data }) {
         <h3 className="text-sm font-medium truncate">{data.title}</h3>
         <div className="flex items-center gap-1 text-xs text-gray-400">
           <span>
-            ⭐ {data.rating && data.rating !== 0 ? data.rating : "N/A"}
+            ⭐{" "}
+            {data.rating && data.rating !== 0 ? data.rating.toFixed(1) : "N/A"}
           </span>
           <Dot size={14} />
           <span>{data.type?.toUpperCase()}</span>

@@ -1,37 +1,85 @@
 import { Link, useLocation } from "react-router-dom";
 import Logo from "../ui/Logo";
-import { Home, Compass, Bookmark, User } from "lucide-react";
+import { Home, Compass, Bookmark, User, Menu, X } from "lucide-react";
+import { useState } from "react";
 
 export default function Sidebar() {
+  const [show, setShow] = useState(true);
   return (
-    <aside className="w-56 flex-shrink-0 flex flex-col items-center gap-2 border-r border-borderColor h-screen">
-      <Logo className={"pt-2 px-2 self-start"} />
-      <SidebarBtn path={"/home"} icon={Home} btn={"Home"} />
-      <SidebarBtn path={"/explore"} icon={Compass} btn={"Explore"} />
-      <SidebarBtn path={"/myvalut"} icon={Bookmark} btn={"MyVault"} />
-      <SidebarBtn path={"/profile"} icon={User} btn={"Profile"} />
-      <SectionBreak />
+    <aside
+      className={`${
+        show ? "w-56" : "w-16"
+      } flex flex-col items-center transition-all duration-300 ease-in-out border-r border-borderColor h-screen overflow-hidden`}
+    >
+      <div
+        className={`flex items-center justify-between p-2 w-full ${!show && "px-4"}`}
+      >
+        {show ? (
+          <>
+            <Logo
+              className={`transition-all duration-300 ${
+                show ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
+              }`}
+            />
+            <X
+              size={24}
+              className="cursor-pointer text-tTertiary hover:hover:text-[#ffffffde]"
+              onClick={() => setShow(!show)}
+            />
+          </>
+        ) : (
+          <Menu
+            size={28}
+            className="cursor-pointer text-tTertiary hover:hover:text-[#ffffffde]"
+            onClick={() => setShow(!show)}
+          />
+        )}
+      </div>
+      <SidebarBtn path={"/home"} icon={Home} btn={"Home"} show={show} />
+      <SidebarBtn
+        path={"/explore"}
+        icon={Compass}
+        btn={"Explore"}
+        show={show}
+      />
+      <SidebarBtn
+        path={"/myvalut"}
+        icon={Bookmark}
+        btn={"MyVault"}
+        show={show}
+      />
+      <SidebarBtn path={"/profile"} icon={User} btn={"Profile"} show={show} />
+      {show && <SectionBreak />}
     </aside>
   );
 }
 
 // eslint-disable-next-line
-function SidebarBtn({ icon: Icon, path, btn }) {
+function SidebarBtn({ icon: Icon, path, btn, show }) {
   const location = useLocation();
 
   return (
-    <Link to={path} className="w-full">
+    <Link to={path} className={`${show ? "w-56" : "w-16"}`}>
       <div
-        className={`flex items-center gap-3 border-background hover:border-l-primary hover:text-[#ffffffde] 
-           ${location.pathname === path ? "border-l-primary" : "text-tTertiary"} p-2 border-2`}
+        className={`${
+          show ? "flex items-center gap-3" : "flex justify-center"
+        } border-background hover:border-l-primary hover:text-[#ffffffde] ${
+          location.pathname === path ? "border-l-primary" : "text-tTertiary"
+        } p-2 border-2 transition-all duration-300`}
       >
         <Icon
-          size={24}
+          size={show ? 24 : 28}
           className={`${location.pathname === path ? "text-primary" : ""}`}
         />
-        <span className={`cursor-pointer no-underline font-heading`}>
-          {btn}
-        </span>
+        {show && (
+          <span
+            className={`cursor-pointer no-underline font-heading transition-all duration-200 ${
+              show ? "opacity-100 ml-0" : "opacity-0 -ml-2"
+            }`}
+          >
+            {btn}
+          </span>
+        )}
       </div>
     </Link>
   );

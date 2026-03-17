@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useGetDetail } from "../hooks/useGetDetail";
+import MainLayout from "../components/Layout/MainLayout";
+import Navbar from "../components/Layout/Navbar";
 
 export default function Detail() {
   const { id, type } = useParams();
   const { data } = useGetDetail(type, id);
-  console.log(data);
+  // console.log(data);
 
-  return (
-    <div className="text-5xl font-bold text-center text-white">Hello There</div>
-  );
+  return <MainLayout></MainLayout>;
 }
