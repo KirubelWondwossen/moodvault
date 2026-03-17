@@ -8,5 +8,5 @@ export default function Detail() {
   const { data } = useGetDetail(type, id);
   // console.log(data);
 
-  return <MainLayout></MainLayout>;
+  return <MainLayout showSideBar={false}></MainLayout>;
 }

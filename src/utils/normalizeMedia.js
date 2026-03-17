@@ -2,14 +2,24 @@ const FALLBACK_POSTER = "https://via.placeholder.com/500x750?text=No+Image";
 const FALLBACK_BACKDROP =
   "https://via.placeholder.com/1280x720?text=No+Backdrop";
 
+// 🔥 helper (handles undefined safely)
+function formatRating(value) {
+  return typeof value === "number"
+    ? Number(value.toFixed(1)) // change to string if you prefer: value.toFixed(1)
+    : 0;
+}
+
 export function normalizeMovie(movie = {}) {
   return {
     id: movie?.id ?? null,
     title: movie?.title ?? "Unknown Title",
+
     poster: movie?.poster_path
       ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
       : FALLBACK_POSTER,
-    rating: movie?.vote_average ?? 0,
+
+    rating: formatRating(movie?.vote_average),
+
     type: "movie",
     source: "tmdb",
   };
@@ -19,10 +29,13 @@ export function normalizeTV(tv = {}) {
   return {
     id: tv?.id ?? null,
     title: tv?.name ?? "Unknown Title",
+
     poster: tv?.poster_path
       ? `https://image.tmdb.org/t/p/w500${tv.poster_path}`
       : FALLBACK_POSTER,
-    rating: tv?.vote_average ?? 0,
+
+    rating: formatRating(tv?.vote_average),
+
     type: "tv",
     source: "tmdb",
   };
@@ -31,6 +44,7 @@ export function normalizeTV(tv = {}) {
 export function normalizeAnime(anime = {}) {
   return {
     id: anime?.mal_id ?? null,
+
     title:
       anime?.title_english ||
       anime?.title ||
@@ -38,7 +52,9 @@ export function normalizeAnime(anime = {}) {
       "Unknown Title",
 
     poster: anime?.images?.jpg?.image_url ?? FALLBACK_POSTER,
-    rating: anime?.score ?? 0,
+
+    rating: formatRating(anime?.score),
+
     type: "anime",
     source: "jikan",
   };
@@ -57,7 +73,8 @@ export function normalizeMovieDetail(movie = {}) {
       ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
       : FALLBACK_BACKDROP,
 
-    rating: movie?.vote_average.toFixed(1) ?? 0,
+    rating: formatRating(movie?.vote_average),
+
     overview: movie?.overview ?? "No description available",
 
     genres: movie?.genres?.map((g) => g.name) ?? [],
@@ -86,7 +103,8 @@ export function normalizeTVDetail(tv = {}) {
       ? `https://image.tmdb.org/t/p/original${tv.backdrop_path}`
       : FALLBACK_BACKDROP,
 
-    rating: tv?.vote_average.toFixed(1) ?? 0,
+    rating: formatRating(tv?.vote_average),
+
     overview: tv?.overview ?? "No description available",
 
     genres: tv?.genres?.map((g) => g.name) ?? [],
@@ -118,7 +136,8 @@ export function normalizeAnimeDetail(anime = {}) {
     poster,
     backdrop: backdrop || FALLBACK_BACKDROP,
 
-    rating: anime?.score.toFixed(1) ?? 0,
+    rating: formatRating(anime?.score),
+
     overview: anime?.synopsis ?? "No description available",
 
     genres: anime?.genres?.map((g) => g.name) ?? [],

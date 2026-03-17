@@ -1,10 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import Logo from "../ui/Logo";
 import { Home, Compass, Bookmark, User, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function Sidebar() {
-  const [show, setShow] = useState(true);
+export default function Sidebar({ showSideBar = true }) {
+  const [show, setShow] = useState(showSideBar);
+
+  useEffect(() => {
+    setShow(showSideBar);
+  }, [showSideBar]);
+
   return (
     <aside
       className={`${

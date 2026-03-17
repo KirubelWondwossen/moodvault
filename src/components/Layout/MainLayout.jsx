@@ -2,11 +2,11 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
-export default function MainLayout({ children, title }) {
+export default function MainLayout({ children, title, showSideBar }) {
   return (
     <div className="flex h-screen overflow-hidden">
       <Toaster position="top-center" />
-      <Sidebar />
+      <Sidebar showSideBar={showSideBar} />
       <div className="flex flex-col flex-1 px-4">
         <Navbar />
         <h1 className="text-2xl font-bold mb-4">{title}</h1>
