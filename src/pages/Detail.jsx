@@ -33,7 +33,7 @@ function DetailContent({ data }) {
       <h1 className="font-heading font-bold text-6xl mb-6">{data.title}</h1>
       <div className="flex gap-5 items-center">
         {data.genres?.map((el) => (
-          <GenreTags genre={el} />
+          <GenreTags genre={el} key={el.id} />
         ))}
       </div>
       <div className="flex gap-5 items-center">
@@ -56,7 +56,9 @@ function RatingStar({ rating }) {
   return (
     <div className="flex items-center gap-3">
       <Star size={28} className="text-[#F5C518] fill-[#F5C518]" />
-      <span className="font-body text-xl">{rating} / 10</span>
+      <span className="font-body text-xl">
+        {rating ? rating + " / 10" : "N/A"}{" "}
+      </span>
     </div>
   );
 }
@@ -64,7 +66,7 @@ function Duration({ duration }) {
   return (
     <div className="flex items-center gap-1">
       <Hourglass size={24} className="fill-tPrimary text-tPrimary" />
-      <span className="font-body text-xl">{duration}</span>
+      <span className="font-body text-xl">{duration ? duration : "N/A"}</span>
     </div>
   );
 }
