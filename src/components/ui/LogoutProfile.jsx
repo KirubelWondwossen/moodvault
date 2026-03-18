@@ -2,6 +2,7 @@ import { LogOut, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import ProfilePic from "./ProfilePic";
 
 export default function LogoutProfile({ user }) {
   const { logout } = useAuth();
@@ -15,11 +16,7 @@ export default function LogoutProfile({ user }) {
 
   return (
     <div className="flex flex-col z-50 items-center gap-2 w-60 shadow-md p-3 rounded-md bg-[#191d23] absolute right-0 top-full mt-2">
-      <img
-        src="/profile-pic.jpg"
-        alt="profile picture"
-        className="w-12 rounded-full"
-      />
+      <ProfilePic />
 
       <p className="font-body text-lg">
         {user.firstName} {user.lastName}

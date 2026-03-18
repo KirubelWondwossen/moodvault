@@ -1,11 +1,9 @@
+import ProfilePic from "./ProfilePic";
+
 export default function NavProfile({ user }) {
   return (
     <div className={"gap-2 px-4 flex items-center cursor-pointer z-50"}>
-      <img
-        src="/profile-pic.jpg"
-        alt="profile picture"
-        className="w-10 rounded-full"
-      />
+      <ProfilePic />
       <p className="font-body text-lg">{user.firstName}</p>
     </div>
   );

@@ -15,7 +15,6 @@ import DetailSkeleton from "../components/ui/DetailSkeleton";
 export default function Detail() {
   const { id, type } = useParams();
   const { data, isLoading } = useGetDetail(type, id);
-  console.log(data);
 
   return (
     <MainLayout showSideBar={false} backdrop={data.backdrop}>
