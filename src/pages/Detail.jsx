@@ -1,19 +1,32 @@
 import { useParams } from "react-router-dom";
 import { useGetDetail } from "../hooks/useGetDetail";
 import MainLayout from "../components/Layout/MainLayout";
-import { Hourglass, Star } from "lucide-react";
+import {
+  Activity,
+  Calendar,
+  Hourglass,
+  Layers,
+  Play,
+  Plus,
+  Star,
+} from "lucide-react";
+import DetailSkeleton from "../components/ui/DetailSkeleton";
 
 export default function Detail() {
   const { id, type } = useParams();
-  const { data } = useGetDetail(type, id);
+  const { data, isLoading } = useGetDetail(type, id);
   console.log(data);
 
   return (
     <MainLayout showSideBar={false} backdrop={data.backdrop}>
-      <div className="flex items-center gap-8 h-full py-3">
-        <Image data={data} />
-        <DetailContent data={data} />
-      </div>
+      {isLoading && <DetailSkeleton />}
+
+      {!isLoading && (
+        <div className="flex items-center gap-8 h-full py-3">
+          <Image data={data} />
+          <DetailContent data={data} />
+        </div>
+      )}
     </MainLayout>
   );
 }
@@ -29,16 +42,53 @@ function Image({ data }) {
 
 function DetailContent({ data }) {
   return (
-    <div className="w-full h-full flex flex-col gap-4 justify-start">
-      <h1 className="font-heading font-bold text-6xl mb-6">{data.title}</h1>
+    <div className="w-full h-full flex flex-col gap-4 mb-4 justify-start overflow-y-auto scrollbar-hide">
+      <h1 className="font-heading font-bold text-6xl mb-3">{data.title}</h1>
       <div className="flex gap-5 items-center">
         {data.genres?.map((el) => (
           <GenreTags genre={el} key={el.id} />
         ))}
       </div>
-      <div className="flex gap-5 items-center">
-        <RatingStar rating={data.rating} />
-        <Duration duration={data.duration} />
+      <div className="flex gap-10 items-center">
+        <FactContainer
+          text={data.rating ? data.rating + " / 10" : "N/A"}
+          icon={Star}
+          iconStyle={"text-[#F5C518] fill-[#F5C518]"}
+        />
+        <FactContainer
+          text={data.duration ? data.duration : "N/A"}
+          icon={Hourglass}
+          iconStyle={"fill-tPrimary text-tPrimary"}
+        />
+        <FactContainer
+          text={
+            data.type
+              ? data.type.charAt(0).toUpperCase() + data.type.slice(1)
+              : "N/A"
+          }
+          icon={Layers}
+        />
+
+        <FactContainer
+          text={data.status ? data.status : "N/A"}
+          icon={Activity}
+          iconStyle={"fill-tPrimary text-tPrimary"}
+        />
+      </div>
+
+      <FactContainer
+        text={data.releaseDate ? data.releaseDate : "N/A"}
+        icon={Calendar}
+        className={"mt-4"}
+      />
+      <Overview overview={data.overview} />
+      <div className="flex items-center gap-8 mt-6">
+        <Button icon={Play} className={"bg-primary text-background"}>
+          Watch Trailer
+        </Button>
+        <Button icon={Plus} className={"text-primary"}>
+          Add to Vault
+        </Button>
       </div>
     </div>
   );
@@ -52,21 +102,32 @@ function GenreTags({ genre }) {
   );
 }
 
-function RatingStar({ rating }) {
+// eslint-disable-next-line
+function FactContainer({ text, iconStyle, icon: Icon, className }) {
   return (
-    <div className="flex items-center gap-3">
-      <Star size={28} className="text-[#F5C518] fill-[#F5C518]" />
-      <span className="font-body text-xl">
-        {rating ? rating + " / 10" : "N/A"}{" "}
-      </span>
+    <div className={`flex items-center gap-3 ${className}`}>
+      <Icon size={28} className={iconStyle} />
+      <span className="font-body text-xl">{text}</span>
     </div>
   );
 }
-function Duration({ duration }) {
+
+function Overview({ overview }) {
   return (
-    <div className="flex items-center gap-1">
-      <Hourglass size={24} className="fill-tPrimary text-tPrimary" />
-      <span className="font-body text-xl">{duration ? duration : "N/A"}</span>
-    </div>
+    <p className="font-body text-gray-300 leading-relaxed text-sm md:text-base max-w-3xl mt-3">
+      {overview || "No overview available."}
+    </p>
+  );
+}
+
+// eslint-disable-next-line
+function Button({ children, className, icon: Icon }) {
+  return (
+    <button
+      className={`group px-7 py-2 text-lg font-heading hover:scale-105 border-primary border transition-all duration-300 rounded-3xl ${className} flex items-center gap-3 relative`}
+    >
+      {children}
+      <Icon size={20} />
+    </button>
   );
 }

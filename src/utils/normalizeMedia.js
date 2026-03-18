@@ -1,4 +1,5 @@
 import { formatDuration } from "./formatDuration";
+import { normalizeDate } from "./normalizeDate";
 
 const FALLBACK_POSTER = "https://via.placeholder.com/500x750?text=No+Image";
 const FALLBACK_BACKDROP =
@@ -144,7 +145,7 @@ export function normalizeAnimeDetail(anime = {}) {
 
     genres: anime?.genres?.map((g) => g.name) ?? [],
 
-    releaseDate: anime?.aired?.from ?? null,
+    releaseDate: normalizeDate(anime?.aired?.from) ?? null,
     status: anime?.status ?? null,
     episodes: anime?.episodes ?? null,
     duration: anime?.duration ?? null,
