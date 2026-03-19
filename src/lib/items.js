@@ -8,15 +8,23 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  getDocs,
+  where,
+  getDoc,
 } from "firebase/firestore";
 
 import { db } from "./firebase";
 
+/* =========================
+   CREATE ITEM
+========================= */
 export async function saveItem(userId, item) {
   if (!userId) throw new Error("User not authenticated");
 
   const docRef = await addDoc(collection(db, "users", userId, "items"), {
     ...item,
+    isWatched: item.isWatched ?? false,
+    type: item.type || "movie", // 👈 default type
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -24,13 +32,26 @@ export async function saveItem(userId, item) {
   return docRef.id;
 }
 
-export function subscribeToUserItems(userId, callback) {
+/* =========================
+   SUBSCRIBE (REAL-TIME)
+   Filters: isWatched + type
+========================= */
+export function subscribeToUserItems(userId, callback, filters = {}) {
   if (!userId) return;
 
-  const q = query(
-    collection(db, "users", userId, "items"),
-    orderBy("createdAt", "desc"),
-  );
+  const { isWatched = null, type = null } = filters;
+
+  let constraints = [orderBy("createdAt", "desc")];
+
+  if (isWatched !== null) {
+    constraints.push(where("isWatched", "==", isWatched));
+  }
+
+  if (type) {
+    constraints.push(where("type", "==", type));
+  }
+
+  const q = query(collection(db, "users", userId, "items"), ...constraints);
 
   const unsubscribe = onSnapshot(q, (snapshot) => {
     const items = snapshot.docs.map((doc) => ({
@@ -44,6 +65,9 @@ export function subscribeToUserItems(userId, callback) {
   return unsubscribe;
 }
 
+/* =========================
+   UPDATE ITEM
+========================= */
 export async function updateItem(userId, itemId, updates) {
   if (!userId || !itemId) {
     throw new Error("Missing ids");
@@ -57,11 +81,97 @@ export async function updateItem(userId, itemId, updates) {
   });
 }
 
+/* =========================
+   TOGGLE WATCHED
+========================= */
+export async function toggleWatched(userId, itemId, currentValue) {
+  if (!userId || !itemId) {
+    throw new Error("Missing ids");
+  }
+
+  const ref = doc(db, "users", userId, "items", itemId);
+
+  await updateDoc(ref, {
+    isWatched: !currentValue,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/* =========================
+   UPDATE TYPE (helper)
+========================= */
+export async function updateItemType(userId, itemId, type) {
+  if (!userId || !itemId) {
+    throw new Error("Missing ids");
+  }
+
+  const ref = doc(db, "users", userId, "items", itemId);
+
+  await updateDoc(ref, {
+    type,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/* =========================
+   DELETE ITEM
+========================= */
+
 export async function deleteItem(userId, itemId) {
   if (!userId || !itemId) {
     throw new Error("Missing userId or itemId");
   }
 
-  const ref = doc(db, "users", userId, "items", itemId);
-  await deleteDoc(ref);
+  const q = query(
+    collection(db, "users", userId, "items"),
+    where("itemId", "==", itemId),
+  );
+
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) return;
+
+  const deletes = snapshot.docs.map((docItem) => deleteDoc(docItem.ref));
+
+  await Promise.all(deletes);
+}
+
+/* =========================
+   FETCH (ONE-TIME)
+   Filters supported
+========================= */
+export async function fetchUserItems(userId, filters = {}) {
+  if (!userId) throw new Error("User not authenticated");
+
+  const { isWatched = null, type = null } = filters;
+
+  let constraints = [orderBy("createdAt", "desc")];
+
+  if (isWatched !== null) {
+    constraints.push(where("isWatched", "==", isWatched));
+  }
+
+  if (type) {
+    constraints.push(where("type", "==", type));
+  }
+
+  const q = query(collection(db, "users", userId, "items"), ...constraints);
+
+  const snapshot = await getDocs(q);
+
+  const items = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  return items;
+}
+
+export async function checkItemSaved(userId, itemId) {
+  if (!userId || !itemId) return false;
+
+  const ref = doc(db, "users", userId, "items", String(itemId));
+  const snap = await getDoc(ref);
+
+  return snap.exists();
 }
