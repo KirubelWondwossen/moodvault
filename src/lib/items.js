@@ -170,8 +170,12 @@ export async function fetchUserItems(userId, filters = {}) {
 export async function checkItemSaved(userId, itemId) {
   if (!userId || !itemId) return false;
 
-  const ref = doc(db, "users", userId, "items", String(itemId));
-  const snap = await getDoc(ref);
+  const q = query(
+    collection(db, "users", userId, "items"),
+    where("itemId", "==", itemId),
+  );
 
-  return snap.exists();
+  const snapshot = await getDocs(q);
+
+  return !snapshot.empty;
 }
