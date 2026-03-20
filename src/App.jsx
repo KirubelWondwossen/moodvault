@@ -52,7 +52,7 @@ function App() {
       />
 
       <Route
-        path="/my-list"
+        path="/myvault"
         element={
           <ProtectedRoute>
             <MyVault />

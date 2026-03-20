@@ -48,7 +48,7 @@ export default function Sidebar({ showSideBar = false }) {
         show={show}
       />
       <SidebarBtn
-        path={"/myvalut"}
+        path={"/myvault"}
         icon={Bookmark}
         btn={"MyVault"}
         show={show}

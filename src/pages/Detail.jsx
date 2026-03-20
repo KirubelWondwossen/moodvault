@@ -15,7 +15,6 @@ import DetailSkeleton from "../components/ui/DetailSkeleton";
 import { checkItemSaved, deleteItem, saveItem } from "../lib/items";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
-import { Loader } from "../components/ui/Loader";
 import { ClipLoader } from "react-spinners";
 
 export default function Detail() {

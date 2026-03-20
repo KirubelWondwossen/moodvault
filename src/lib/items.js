@@ -10,7 +10,6 @@ import {
   serverTimestamp,
   getDocs,
   where,
-  getDoc,
 } from "firebase/firestore";
 
 import { db } from "./firebase";
@@ -84,19 +83,18 @@ export async function updateItem(userId, itemId, updates) {
 /* =========================
    TOGGLE WATCHED
 ========================= */
-export async function toggleWatched(userId, itemId, currentValue) {
-  if (!userId || !itemId) {
-    throw new Error("Missing ids");
+export async function toggleWatched(userId, docId, currentValue) {
+  if (!userId || !docId || typeof docId !== "string") {
+    throw new Error("Invalid userId or docId");
   }
 
-  const ref = doc(db, "users", userId, "items", itemId);
+  const ref = doc(db, "users", userId, "items", docId);
 
   await updateDoc(ref, {
     isWatched: !currentValue,
     updatedAt: serverTimestamp(),
   });
 }
-
 /* =========================
    UPDATE TYPE (helper)
 ========================= */
