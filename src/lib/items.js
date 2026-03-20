@@ -115,25 +115,14 @@ export async function updateItemType(userId, itemId, type) {
    DELETE ITEM
 ========================= */
 
-export async function deleteItem(userId, itemId) {
-  if (!userId || !itemId) {
-    throw new Error("Missing userId or itemId");
+export async function deleteItem(userId, docId) {
+  if (!userId || !docId) {
+    throw new Error("Missing userId or docId");
   }
 
-  const q = query(
-    collection(db, "users", userId, "items"),
-    where("itemId", "==", itemId),
-  );
-
-  const snapshot = await getDocs(q);
-
-  if (snapshot.empty) return;
-
-  const deletes = snapshot.docs.map((docItem) => deleteDoc(docItem.ref));
-
-  await Promise.all(deletes);
+  const ref = doc(db, "users", userId, "items", docId);
+  await deleteDoc(ref);
 }
-
 /* =========================
    FETCH (ONE-TIME)
    Filters supported
@@ -176,4 +165,17 @@ export async function checkItemSaved(userId, itemId) {
   const snapshot = await getDocs(q);
 
   return !snapshot.empty;
+}
+
+export function listenUserItems(userId, callback) {
+  if (!userId) return () => {};
+
+  const colRef = collection(db, "users", userId, "items");
+
+  const unsubscribe = onSnapshot(colRef, (snapshot) => {
+    const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    callback(items);
+  });
+
+  return unsubscribe;
 }
