@@ -1,22 +1,28 @@
+import MainLayout from "../components/Layout/MainLayout";
+import { Tags } from "../components/ui/Tags";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { Toaster, toast } from "react-hot-toast";
 
 export default function Home() {
   const { user } = useAuth();
-  const { logout } = useAuth();
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    await logout();
-    toast.success("Logged out successfully");
-    setTimeout(() => navigate("/"), 1000);
-  };
-
   return (
-    <div className="text-5xl font-bold text-center text-white">
-      <Toaster position="top-center" />
-      <h1>Hello There {user.firstName}</h1>
-      <button onClick={handleLogout}>Logout</button>
+    <MainLayout title={`Welcome, ${user.firstName}`}>
+      <MoodPicker />
+    </MainLayout>
+  );
+}
+
+function MoodPicker() {
+  return (
+    <div className="flex gap-3 flex-col">
+      <h3 className="font-heading font-semibold text-lg ">
+        How are you feeling today?
+      </h3>
+      <div className="flex gap-5 ">
+        <Tags tag={"Sad"} />
+        <Tags tag={"Happy"} />
+        <Tags tag={"Chill "} />
+        <Tags tag={"Excited"} />
+      </div>
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { checkItemSaved, deleteItem, saveItem } from "../lib/items";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
+import { Tags } from "../components/ui/Tags";
 
 export default function Detail() {
   const { id, type } = useParams();
@@ -64,7 +65,7 @@ function DetailContent({ data }) {
       <h1 className="font-heading font-bold text-6xl mb-3">{data.title}</h1>
       <div className="flex gap-5 items-center">
         {data.genres?.map((el, i) => (
-          <GenreTags genre={el} key={el.id ?? i} />
+          <Tags tag={el} key={el.id ?? i} />
         ))}
       </div>
       <div className="flex gap-10 items-center">
@@ -176,14 +177,6 @@ function DetailContent({ data }) {
         </button>
       </div>
     </div>
-  );
-}
-
-function GenreTags({ genre }) {
-  return (
-    <span className="font-body cursor-pointer px-3 py-1 text-sm text-gray-200 bg-[#161b22] border border-[#30363d] rounded-full shadow-[0_0_10px_rgba(88,166,255,0.15)] hover:shadow-[0_0_15px_rgba(88,166,255,0.3)] transition-all duration-300">
-      {genre}
-    </span>
   );
 }
 
