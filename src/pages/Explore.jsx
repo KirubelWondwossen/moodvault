@@ -48,25 +48,25 @@ export default function Explore() {
           <CardContainer
             data={trendingMovieTv}
             title={"Trending Movie & TV"}
-            link={"trending-movie-tv"}
+            link={"/explore/trending-movie-tv"}
           />
           <SectionBreak />
           <CardContainer
             data={trendingAnime}
             title={"Currently Airing Anime"}
-            link={"trending-anime"}
+            link={"/explore/trending-anime"}
           />
           <SectionBreak />
           <CardContainer
             data={popularMovieTv}
             title={"Popular Movie & TV"}
-            link={"popular-movie-tv"}
+            link={"/explore/popular-movie-tv"}
           />
           <SectionBreak />
           <CardContainer
             data={topAnime}
             title={"Top Animes"}
-            link={"top-anime"}
+            link={"/explore/top-anime"}
           />
         </div>
       )}

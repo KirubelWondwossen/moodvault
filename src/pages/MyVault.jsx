@@ -5,6 +5,7 @@ import { fetchUserItems, listenUserItems } from "../lib/items";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import VaultItemCard from "../components/ui/VaultItemCard";
 import { useEffect, useState } from "react";
+import { sortByLatest } from "../utils/filterOptions";
 
 export default function MyVault() {
   const { user } = useAuth();
@@ -13,11 +14,12 @@ export default function MyVault() {
     queryFn: () => fetchUserItems(user.uid),
   });
 
+  const latestItems = data ? sortByLatest(data) : [];
   return (
     <MainLayout title={"My Vault"}>
       {isLoading && <SkeletonGrid count={12} />}
-      {!isLoading && (
-        <CardContainer userId={user.uid} data={data} user={user} />
+      {!isLoading && latestItems.length > 0 && (
+        <CardContainer userId={user.uid} data={latestItems} user={user} />
       )}
     </MainLayout>
   );
