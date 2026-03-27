@@ -9,6 +9,7 @@ import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { getTrendingMovies, getTrendingTv } from "../services/tmdb";
 import { getSeasonalAnime } from "../services/jikan";
 import { useAllMedia } from "../hooks/useAllMedia";
+import { SectionBreak } from "../components/ui/SectionBreak";
 
 export default function Home() {
   const { user } = useAuth();
@@ -41,10 +42,18 @@ export default function Home() {
           <MoodPicker />
           <CardContainer
             data={trending}
+            title={"Recommended For You"}
+            link={"/explore"}
+            className={"mt-4"}
+          />
+          <SectionBreak />
+          <CardContainer
+            data={trending}
             title={"Trending Now"}
             link={"/explore"}
             className={"mt-4"}
           />
+          <SectionBreak />
           <CardContainer
             data={latestItems}
             title={"Continue Watching (from My Vault)"}

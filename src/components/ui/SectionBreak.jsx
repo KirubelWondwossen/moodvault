@@ -1,3 +1,3 @@
 export function SectionBreak() {
-  return <span className="border-b border-borderColor w-full py-2"></span>;
+  return <div className="w-full border-b border-borderColor my-4" />;
 }

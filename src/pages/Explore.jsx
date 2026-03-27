@@ -6,7 +6,6 @@ import {
   getTrendingTv,
 } from "../services/tmdb";
 import { getSeasonalAnime, getTopAnime } from "../services/jikan";
-import { Loader } from "../components/ui/Loader";
 import MainLayout from "../components/Layout/MainLayout";
 import { useCombinedMedia } from "../hooks/useCombinedMedia";
 import { useAnimeList } from "../hooks/useAnimeList";
