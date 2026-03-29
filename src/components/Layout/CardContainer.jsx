@@ -2,7 +2,13 @@ import { useState, useEffect } from "react";
 import MovieCard from "../ui/MovieCard";
 import { Link } from "react-router-dom";
 
-export default function CardContainer({ data, title, link, className }) {
+export default function CardContainer({
+  data,
+  title,
+  link,
+  className,
+  handleNavigate,
+}) {
   const [visibleCards, setVisibleCards] = useState(6);
 
   useEffect(() => {
@@ -26,12 +32,21 @@ export default function CardContainer({ data, title, link, className }) {
     <section className={`flex flex-col w-full gap-2 ${className}`}>
       <div className="flex justify-between w-full items-center">
         <h2 className="text-2xl font-semibold">{title}</h2>
-        <Link
-          to={link}
-          className="text-primary underline underline-offset-4 font-heading"
-        >
-          See More →
-        </Link>
+        {!handleNavigate ? (
+          <Link
+            to={link}
+            className="text-primary underline underline-offset-4 font-heading"
+          >
+            See More →
+          </Link>
+        ) : (
+          <span
+            className="text-primary underline underline-offset-4 font-heading cursor-pointer"
+            onClick={handleNavigate}
+          >
+            See More →
+          </span>
+        )}
       </div>
       <div className="relative w-full overflow-hidden">
         {data.length === 0 && (

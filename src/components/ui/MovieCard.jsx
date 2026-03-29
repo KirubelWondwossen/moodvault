@@ -10,7 +10,7 @@ export default function MovieCard({ data }) {
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl shadow-sm">
         <img
-          src={data.poster || "/no-image.png"}
+          src={data.poster || "/no-poster.png"}
           alt={data.title || "No title"}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />

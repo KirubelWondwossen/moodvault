@@ -12,6 +12,7 @@ import { useAllMedia } from "../hooks/useAllMedia";
 import { SectionBreak } from "../components/ui/SectionBreak";
 import { useAICombinedMedia } from "../hooks/useAICombinedMedia";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [mood, setMood] = useState("");
@@ -37,6 +38,17 @@ export default function Home() {
   );
 
   const { aiResult, aiLoading } = useAICombinedMedia(mood);
+
+  const navigate = useNavigate();
+  function handleNavigate() {
+    navigate("/moremoodresult", {
+      state: {
+        mood,
+        initialResults: aiResult,
+      },
+    });
+  }
+
   const latestItems = data ? sortByLatest(data) : [];
 
   return (
@@ -46,7 +58,11 @@ export default function Home() {
         <>
           <MoodPicker setMood={setMood} />
 
-          <AIRecomendation aiLoading={aiLoading} aiResult={aiResult} />
+          <AIRecomendation
+            aiLoading={aiLoading}
+            aiResult={aiResult}
+            handleNavigate={handleNavigate}
+          />
           <SectionBreak />
           <CardContainer
             data={trending}
@@ -83,7 +99,7 @@ function MoodPicker({ setMood }) {
   );
 }
 
-function AIRecomendation({ aiResult, aiLoading }) {
+function AIRecomendation({ aiResult, aiLoading, handleNavigate }) {
   return (
     <div className="flex flex-col gap-2 mt-2">
       {!aiLoading ? (
@@ -94,6 +110,7 @@ function AIRecomendation({ aiResult, aiLoading }) {
               title={"Recommended For You"}
               link={"/explore"}
               className={"mt-4"}
+              handleNavigate={handleNavigate}
             />
           )}
         </>

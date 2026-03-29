@@ -9,6 +9,7 @@ import MyVault from "./pages/MyVault";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MoreExplore from "./pages/MoreExplore";
+import MoreMoodResult from "./pages/MoreMoodResults";
 
 function App() {
   return (
@@ -60,6 +61,14 @@ function App() {
         }
       />
 
+      <Route
+        path="/moremoodresult"
+        element={
+          <ProtectedRoute>
+            <MoreMoodResult />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/profile"
         element={
