@@ -42,10 +42,6 @@ export function useAICombinedMedia(mood) {
     .filter(Boolean);
 
   const hasTitles = titles.length > 0;
-
-  console.log("AI RAW:", aiQuery.data);
-  console.log("TITLES:", titles);
-
   const movieQuery = useQuery({
     queryKey: ["aiMovies", titles],
     queryFn: () => searchMoviesMultiple(titles),

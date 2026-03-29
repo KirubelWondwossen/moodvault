@@ -10,8 +10,11 @@ import { getTrendingMovies, getTrendingTv } from "../services/tmdb";
 import { getSeasonalAnime } from "../services/jikan";
 import { useAllMedia } from "../hooks/useAllMedia";
 import { SectionBreak } from "../components/ui/SectionBreak";
+import { useAICombinedMedia } from "../hooks/useAICombinedMedia";
+import { useState } from "react";
 
 export default function Home() {
+  const [mood, setMood] = useState("");
   const { user } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["movieDetail", user.uid],
@@ -33,18 +36,18 @@ export default function Home() {
     currentAnimeQuery,
   );
 
+  const { aiResult, aiLoading } = useAICombinedMedia(mood);
   const latestItems = data ? sortByLatest(data) : [];
+
   return (
     <MainLayout title={`Welcome, ${user.firstName}`}>
       {isLoading && <SkeletonGrid count={12} />}
       {!isLoading && latestItems.length > 0 && (
         <>
-          <MoodPicker />
-          <CardContainer
-            data={trending}
-            title={"Recommended For You"}
-            link={"/explore"}
-            className={"mt-4"}
+          <AIRecomendation
+            aiLoading={aiLoading}
+            aiResult={aiResult}
+            setMood={setMood}
           />
           <SectionBreak />
           <CardContainer
@@ -66,18 +69,40 @@ export default function Home() {
   );
 }
 
-function MoodPicker() {
+function MoodPicker({ setMood }) {
   return (
     <div className="flex gap-3 flex-col">
       <h3 className="font-heading font-semibold text-lg ">
         How are you feeling today?
       </h3>
       <div className="flex gap-5 ">
-        <Tags tag={"Sad"} />
-        <Tags tag={"Happy"} />
-        <Tags tag={"Chill "} />
-        <Tags tag={"Excited"} />
+        <Tags tag={"Sad"} onClick={() => setMood("Sad")} />
+        <Tags tag={"Happy"} onClick={() => setMood("Happy")} />
+        <Tags tag={"Chill"} onClick={() => setMood("Chill")} />
+        <Tags tag={"Excited"} onClick={() => setMood("Excited")} />
       </div>
+    </div>
+  );
+}
+
+function AIRecomendation({ aiResult, aiLoading, setMood }) {
+  return (
+    <div className="flex flex-col gap-2">
+      {!aiLoading ? (
+        <>
+          <MoodPicker setMood={setMood} />
+          {aiResult.length > 0 && (
+            <CardContainer
+              data={aiResult}
+              title={"Recommended For You"}
+              link={"/explore"}
+              className={"mt-4"}
+            />
+          )}
+        </>
+      ) : (
+        <SkeletonGrid count={6} />
+      )}
     </div>
   );
 }
