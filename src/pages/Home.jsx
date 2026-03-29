@@ -44,11 +44,9 @@ export default function Home() {
       {isLoading && <SkeletonGrid count={12} />}
       {!isLoading && latestItems.length > 0 && (
         <>
-          <AIRecomendation
-            aiLoading={aiLoading}
-            aiResult={aiResult}
-            setMood={setMood}
-          />
+          <MoodPicker setMood={setMood} />
+
+          <AIRecomendation aiLoading={aiLoading} aiResult={aiResult} />
           <SectionBreak />
           <CardContainer
             data={trending}
@@ -85,12 +83,11 @@ function MoodPicker({ setMood }) {
   );
 }
 
-function AIRecomendation({ aiResult, aiLoading, setMood }) {
+function AIRecomendation({ aiResult, aiLoading }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 mt-2">
       {!aiLoading ? (
         <>
-          <MoodPicker setMood={setMood} />
           {aiResult.length > 0 && (
             <CardContainer
               data={aiResult}
