@@ -92,3 +92,42 @@ export const getTvDetails = async (tvId) => {
   const data = await res.json();
   return data;
 };
+export async function searchMoviesMultiple(queries = []) {
+  const cleanedQueries = queries.map((q) => q.trim()).filter(Boolean);
+
+  const results = await Promise.all(
+    cleanedQueries.map((q) =>
+      fetch(
+        `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(q)}`,
+      ).then((res) => res.json()),
+    ),
+  );
+
+  const combined = results.flatMap((r) => r.results || []);
+
+  const unique = Array.from(
+    new Map(combined.map((item) => [item.id, item])).values(),
+  );
+
+  return unique;
+}
+
+export async function searchTVMultiple(queries = []) {
+  const cleanedQueries = queries.map((q) => q.trim()).filter(Boolean);
+
+  const results = await Promise.all(
+    cleanedQueries.map((q) =>
+      fetch(
+        `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(q)}`,
+      ).then((res) => res.json()),
+    ),
+  );
+
+  const combined = results.flatMap((r) => r.results || []);
+
+  const unique = Array.from(
+    new Map(combined.map((item) => [item.id, item])).values(),
+  );
+
+  return unique;
+}
