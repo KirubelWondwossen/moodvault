@@ -1,8 +1,11 @@
 import { Toaster } from "react-hot-toast";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { useAuth } from "../../context/AuthContext";
+import ErrorScreen from "../ui/ErrorScreen";
 
 export default function MainLayout({ children, title, showSideBar, backdrop }) {
+  const { error } = useAuth();
   return (
     <div className="flex h-screen overflow-hidden">
       <Toaster position="top-center" />
@@ -22,12 +25,19 @@ export default function MainLayout({ children, title, showSideBar, backdrop }) {
         }
       >
         <Navbar />
-        {!backdrop && <h1 className="text-2xl font-bold mb-4">{title}</h1>}
-        <div
-          className={`flex-1 min-h-0 ${!backdrop && "overflow-y-auto scrollbar-hide"} px-4`}
-        >
-          {children}
-        </div>
+
+        {!error ? (
+          <>
+            {!backdrop && <h1 className="text-2xl font-bold mb-4">{title}</h1>}
+            <div
+              className={`flex-1 min-h-0 ${!backdrop && "overflow-y-auto scrollbar-hide"} px-4`}
+            >
+              {children}
+            </div>
+          </>
+        ) : (
+          <ErrorScreen type={"offline"} />
+        )}
       </div>
     </div>
   );

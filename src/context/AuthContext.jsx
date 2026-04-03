@@ -1,9 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "../lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../lib/firebase";
-import { signOut } from "firebase/auth";
 
 const AuthContext = createContext();
 
@@ -12,26 +10,73 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const handleOffline = () => {
+      setError("offline");
+    };
+
+    const handleOnline = () => {
+      setError(null);
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        const docRef = doc(db, "users", firebaseUser.uid);
-        const docSnap = await getDoc(docRef);
+      try {
+        setError(null);
 
-        if (docSnap.exists()) {
-          setUser({
-            ...firebaseUser,
-            ...docSnap.data(), // merge Firestore data
-          });
+        if (firebaseUser) {
+          const docRef = doc(db, "users", firebaseUser.uid);
+
+          let docSnap = null;
+
+          try {
+            docSnap = await getDoc(docRef);
+          } catch (err) {
+            console.error("Firestore error:", err.message);
+            if (!navigator.onLine) {
+              setError("offline");
+              setUser(firebaseUser);
+              setLoading(false);
+              return;
+            } else {
+              throw err;
+            }
+          }
+
+          if (docSnap && docSnap.exists()) {
+            setUser({
+              ...firebaseUser,
+              ...docSnap.data(),
+            });
+          } else {
+            setUser(firebaseUser);
+          }
         } else {
-          setUser(firebaseUser);
+          setUser(null);
         }
-      } else {
-        setUser(null);
-      }
+      } catch (err) {
+        console.error("Auth error:", err.message);
 
-      setLoading(false);
+        if (!navigator.onLine) {
+          setError("offline");
+        } else {
+          setError(err.message);
+          setUser(null);
+        }
+      } finally {
+        setLoading(false);
+      }
     });
 
     return () => unsub();
@@ -39,16 +84,19 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
+      setError(null);
       await signOut(auth);
       setUser(null);
-    } catch (error) {
-      console.error("Logout error:", error.message);
+    } catch (err) {
+      console.error("Logout error:", err.message);
+      setError(err.message);
     }
   };
+
   if (loading) return null;
 
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, logout, error }}>
       {children}
     </AuthContext.Provider>
   );

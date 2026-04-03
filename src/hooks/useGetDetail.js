@@ -31,6 +31,7 @@ export function useGetDetail(type, id) {
   const [movieDetail, tvDetail, animeDetail] = results;
 
   const isLoading = results.some((query) => query.isLoading);
+  const error = results.some((query) => query.error);
 
   let data = null;
 
@@ -38,5 +39,5 @@ export function useGetDetail(type, id) {
   if (type === "tv") data = normalizeTVDetail(tvDetail.data);
   if (type === "anime") data = normalizeAnimeDetail(animeDetail.data);
 
-  return { data, isLoading };
+  return { data, isLoading, error };
 }

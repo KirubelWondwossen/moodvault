@@ -5,7 +5,6 @@ import { useAuth } from "../context/AuthContext";
 import { fetchUserItems } from "../lib/items";
 import CardContainer from "../components/Layout/CardContainer";
 import { sortByLatest } from "../utils/filterOptions";
-import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { getTrendingMovies, getTrendingTv } from "../services/tmdb";
 import { getSeasonalAnime } from "../services/jikan";
 import { useAllMedia } from "../hooks/useAllMedia";
@@ -13,14 +12,20 @@ import { SectionBreak } from "../components/ui/SectionBreak";
 import { useAICombinedMedia } from "../hooks/useAICombinedMedia";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorScreen from "../components/ui/ErrorScreen";
+import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 
 export default function Home() {
   const [mood, setMood] = useState("");
   const { user } = useAuth();
-  const { data, isLoading } = useQuery({
+  const navigate = useNavigate();
+
+  const { data, isError } = useQuery({
     queryKey: ["movieDetail", user.uid],
     queryFn: () => fetchUserItems(user.uid),
   });
+
+  const latestItems = data ? sortByLatest(data) : [];
 
   const results = useQueries({
     queries: [
@@ -29,6 +34,7 @@ export default function Home() {
       { queryKey: ["trendingTv"], queryFn: getTrendingTv },
     ],
   });
+
   const [trendingMovieQuery, currentAnimeQuery, trendingTvQuery] = results;
 
   const trending = useAllMedia(
@@ -37,9 +43,11 @@ export default function Home() {
     currentAnimeQuery,
   );
 
-  const { aiResult, aiLoading } = useAICombinedMedia(mood);
+  const isTrendingLoading = results.some((q) => q.isLoading);
+  const isTrendingError = results.some((q) => q.isError);
 
-  const navigate = useNavigate();
+  const { aiResult, aiLoading, aiError } = useAICombinedMedia(mood);
+
   function handleNavigate() {
     navigate("/moremoodresult", {
       state: {
@@ -48,37 +56,46 @@ export default function Home() {
       },
     });
   }
-
-  const latestItems = data ? sortByLatest(data) : [];
+  if (isError) {
+    return (
+      <MainLayout title={`Welcome, ${user.firstName}`}>
+        <ErrorScreen />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout title={`Welcome, ${user.firstName}`}>
-      {isLoading && <SkeletonGrid count={12} />}
-      {!isLoading && latestItems.length > 0 && (
-        <>
-          <MoodPicker setMood={setMood} />
+      <MoodPicker setMood={setMood} />
 
-          <AIRecomendation
-            aiLoading={aiLoading}
-            aiResult={aiResult}
-            handleNavigate={handleNavigate}
-          />
-          <SectionBreak />
-          <CardContainer
-            data={trending}
-            title={"Trending Now"}
-            link={"/explore"}
-            className={"mt-4"}
-          />
-          <SectionBreak />
-          <CardContainer
-            data={latestItems}
-            title={"Continue Watching (from My Vault)"}
-            link={"/myvault"}
-            className={"mt-4 mb-5"}
-          />
-        </>
-      )}
+      <AIRecomendation
+        aiLoading={aiLoading}
+        aiResult={aiResult}
+        aiError={aiError}
+        handleNavigate={handleNavigate}
+      />
+
+      <SectionBreak />
+
+      <CardContainer
+        data={trending}
+        title={"Trending Now"}
+        link={"/explore"}
+        className={"mt-4"}
+        isLoading={isTrendingLoading}
+        isError={isTrendingError}
+      />
+
+      <SectionBreak />
+
+      <CardContainer
+        data={latestItems}
+        title={"Continue Watching (from My Vault)"}
+        link={"/myvault"}
+        className={"mt-4 mb-5"}
+        isLoading={false}
+        isError={false}
+      />
     </MainLayout>
   );
 }
@@ -86,10 +103,10 @@ export default function Home() {
 function MoodPicker({ setMood }) {
   return (
     <div className="flex gap-3 flex-col">
-      <h3 className="font-heading font-semibold text-lg ">
+      <h3 className="font-heading font-semibold text-lg">
         How are you feeling today?
       </h3>
-      <div className="flex gap-5 ">
+      <div className="flex gap-5">
         <Tags tag={"Sad"} onClick={() => setMood("Sad")} />
         <Tags tag={"Happy"} onClick={() => setMood("Happy")} />
         <Tags tag={"Chill"} onClick={() => setMood("Chill")} />
@@ -99,23 +116,27 @@ function MoodPicker({ setMood }) {
   );
 }
 
-function AIRecomendation({ aiResult, aiLoading, handleNavigate }) {
+function AIRecomendation({ aiResult, aiLoading, aiError, handleNavigate }) {
   return (
     <div className="flex flex-col gap-2 mt-2">
-      {!aiLoading ? (
-        <>
-          {aiResult.length > 0 && (
-            <CardContainer
-              data={aiResult}
-              title={"Recommended For You"}
-              link={"/explore"}
-              className={"mt-4"}
-              handleNavigate={handleNavigate}
-            />
-          )}
-        </>
-      ) : (
-        <SkeletonGrid count={6} />
+      {aiLoading && <SkeletonGrid count={6} />}
+
+      {!aiLoading && aiError && (
+        <p className="text-red-500 text-center">
+          Failed to get recommendations
+        </p>
+      )}
+
+      {!aiLoading && !aiError && aiResult?.length > 0 && (
+        <CardContainer
+          data={aiResult}
+          title={"Recommended For You"}
+          link={"/explore"}
+          className={"mt-4"}
+          handleNavigate={handleNavigate}
+          isLoading={false}
+          isError={false}
+        />
       )}
     </div>
   );

@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import MovieCard from "../ui/MovieCard";
 import { Link } from "react-router-dom";
+import { SkeletonGrid } from "../ui/SkeletonGrid";
+import ErrorScreen from "../ui/ErrorScreen";
 
 export default function CardContainer({
-  data,
+  data = [],
   title,
   link,
   className,
   handleNavigate,
+  isLoading,
+  isError,
 }) {
   const [visibleCards, setVisibleCards] = useState(6);
 
@@ -32,6 +36,7 @@ export default function CardContainer({
     <section className={`flex flex-col w-full gap-2 ${className}`}>
       <div className="flex justify-between w-full items-center">
         <h2 className="text-2xl font-semibold">{title}</h2>
+
         {!handleNavigate ? (
           <Link
             to={link}
@@ -48,13 +53,20 @@ export default function CardContainer({
           </span>
         )}
       </div>
+
       <div className="relative w-full overflow-hidden">
-        {data.length === 0 && (
-          <h2 className="font-heading text-3xl text-center">
-            Add movies to vault
-          </h2>
+        {isLoading && <SkeletonGrid count={visibleCards} />}
+
+        {!isLoading && isError && <ErrorScreen />}
+
+        {!isLoading && !isError && !data?.length && (
+          <p className="text-center text-lg">
+            No {title.toLowerCase()} available
+          </p>
         )}
-        {data.length > 0 && (
+
+        {/* Data */}
+        {!isLoading && !isError && data?.length > 0 && (
           <div className="flex gap-4 items-center">
             {data.slice(0, visibleCards).map((movie) => (
               <MovieCard key={movie.id} data={movie} />

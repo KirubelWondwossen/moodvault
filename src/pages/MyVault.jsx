@@ -6,18 +6,28 @@ import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import VaultItemCard from "../components/ui/VaultItemCard";
 import { useEffect, useState } from "react";
 import { sortByLatest } from "../utils/filterOptions";
+import ErrorScreen from "../components/ui/ErrorScreen";
 
 export default function MyVault() {
   const { user } = useAuth();
-  const { data, isLoading } = useQuery({
-    queryKey: ["movieDetail", user.uid],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["movieDetail", user?.uid],
     queryFn: () => fetchUserItems(user.uid),
+    enabled: !!user,
   });
+
+  if (error) {
+    return (
+      <MainLayout title={"My Vault"}>
+        <ErrorScreen />
+      </MainLayout>
+    );
+  }
 
   const latestItems = data ? sortByLatest(data) : [];
   return (
     <MainLayout title={"My Vault"}>
-      {isLoading && <SkeletonGrid count={12} />}
+      {isLoading && <SkeletonGrid count={6} />}
       {!isLoading && latestItems.length > 0 && (
         <CardContainer userId={user.uid} data={latestItems} user={user} />
       )}
@@ -34,6 +44,7 @@ function CardContainer({ data, user }) {
 
     return () => unsubscribe();
   }, [user]);
+
   if (!items || items.length === 0) {
     return (
       <div className="w-full flex justify-center items-center py-20">

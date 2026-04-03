@@ -17,16 +17,16 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { Tags } from "../components/ui/Tags";
+import ErrorScreen from "../components/ui/ErrorScreen";
 
 export default function Detail() {
   const { id, type } = useParams();
-  const { data, isLoading } = useGetDetail(type, id);
-
+  const { data, isLoading, error } = useGetDetail(type, id);
   return (
     <MainLayout showSideBar={false} backdrop={data.backdrop}>
+      {error && <ErrorScreen />}
       {isLoading && <DetailSkeleton />}
-
-      {!isLoading && (
+      {!isLoading && !error && (
         <div className="flex items-center gap-8 h-full py-3">
           <Image data={data} />
           <DetailContent data={data} />
@@ -102,7 +102,7 @@ function DetailContent({ data }) {
       />
       <Overview overview={data.overview} />
 
-      <div className="flex items-center gap-8 mt-6 relative">
+      <div className="flex items-center gap-8 mt-3 relative">
         <Button icon={Play} className={"bg-primary text-background"}>
           Watch Trailer
         </Button>

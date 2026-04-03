@@ -22,6 +22,7 @@ export default function Signup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
@@ -52,14 +53,19 @@ export default function Signup() {
       toast.success("Account created successfully");
       setTimeout(() => navigate("/"), 1000);
     } catch (error) {
+      setError(error);
       console.log(error.message);
-
       console.error(error.message);
       toast.error(error.message);
       setLoading(false);
     }
   };
-
+  if (error)
+    return (
+      <div className="h-screen flex flex-col items-center">
+        <ErrorScreen />
+      </div>
+    );
   return (
     <AuthLayout>
       <Toaster position="top-center" />

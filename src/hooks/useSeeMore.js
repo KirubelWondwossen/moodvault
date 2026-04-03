@@ -55,6 +55,7 @@ export function useSeeMore(type) {
   ] = results;
 
   const isLoading = results.some((query) => query.isLoading);
+  const error = results.find((query) => query.error)?.error;
 
   const trendingMovieTv = useCombinedMedia(trendingMovieQuery, trendingTvQuery);
   const popularMovieTv = useCombinedMedia(popularMoviesQuery, popularTvQuery);
@@ -68,5 +69,5 @@ export function useSeeMore(type) {
   if (type === "trending-anime") data = trendingAnime;
   if (type === "top-anime") data = topAnime;
 
-  return { data, isLoading };
+  return { data, isLoading, error };
 }

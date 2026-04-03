@@ -1,29 +1,12 @@
-import { useQueries } from "@tanstack/react-query";
-import {
-  getPopularMovies,
-  getPopularTv,
-  getTrendingMovies,
-  getTrendingTv,
-} from "../services/tmdb";
-import { getSeasonalAnime, getTopAnime } from "../services/jikan";
 import MainLayout from "../components/Layout/MainLayout";
 import { useCombinedMedia } from "../hooks/useCombinedMedia";
 import { useAnimeList } from "../hooks/useAnimeList";
 import CardContainer from "../components/Layout/CardContainer";
 import { SectionBreak } from "../components/ui/SectionBreak";
-import { SkeletonGrid } from "../components/ui/SkeletonGrid";
+import { useExploreData } from "../hooks/useExploreData";
 
 export default function Explore() {
-  const results = useQueries({
-    queries: [
-      { queryKey: ["trendingMovies"], queryFn: getTrendingMovies },
-      { queryKey: ["topAnime"], queryFn: getTopAnime },
-      { queryKey: ["currentAnime"], queryFn: getSeasonalAnime },
-      { queryKey: ["popularMovies"], queryFn: getPopularMovies },
-      { queryKey: ["popularTv"], queryFn: getPopularTv },
-      { queryKey: ["trendingTv"], queryFn: getTrendingTv },
-    ],
-  });
+  const { results } = useExploreData();
 
   const [
     trendingMovieQuery,
@@ -41,34 +24,45 @@ export default function Explore() {
 
   return (
     <MainLayout title={"Explore"}>
-      {results.some((q) => q.isLoading) && <SkeletonGrid count={10} />}
-      {!results.some((q) => q.isLoading) && (
-        <div className="flex flex-col items-center gap-6 mb-8 ">
-          <CardContainer
-            data={trendingMovieTv}
-            title={"Trending Movie & TV"}
-            link={"/explore/trending-movie-tv"}
-          />
-          <SectionBreak />
-          <CardContainer
-            data={trendingAnime}
-            title={"Currently Airing Anime"}
-            link={"/explore/trending-anime"}
-          />
-          <SectionBreak />
-          <CardContainer
-            data={popularMovieTv}
-            title={"Popular Movie & TV"}
-            link={"/explore/popular-movie-tv"}
-          />
-          <SectionBreak />
-          <CardContainer
-            data={topAnime}
-            title={"Top Animes"}
-            link={"/explore/top-anime"}
-          />
-        </div>
-      )}
+      <div className="flex flex-col items-center gap-6 mb-8">
+        <CardContainer
+          data={trendingMovieTv}
+          title={"Trending Movie & TV"}
+          link={"/explore/trending-movie-tv"}
+          isLoading={trendingMovieQuery.isLoading || trendingTvQuery.isLoading}
+          isError={trendingMovieQuery.isError || trendingTvQuery.isError}
+        />
+
+        <SectionBreak />
+
+        <CardContainer
+          data={trendingAnime}
+          title={"Currently Airing Anime"}
+          link={"/explore/trending-anime"}
+          isLoading={currentAnimeQuery.isLoading}
+          isError={currentAnimeQuery.isError}
+        />
+
+        <SectionBreak />
+
+        <CardContainer
+          data={popularMovieTv}
+          title={"Popular Movie & TV"}
+          link={"/explore/popular-movie-tv"}
+          isLoading={popularMoviesQuery.isLoading || popularTvQuery.isLoading}
+          isError={popularMoviesQuery.isError || popularTvQuery.isError}
+        />
+
+        <SectionBreak />
+
+        <CardContainer
+          data={topAnime}
+          title={"Top Animes"}
+          link={"/explore/top-anime"}
+          isLoading={topAnimeQuery.isLoading}
+          isError={topAnimeQuery.isError}
+        />
+      </div>
     </MainLayout>
   );
 }
