@@ -3,7 +3,7 @@ import Logo from "../ui/Logo";
 import { Home, Compass, Bookmark, User, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function Sidebar({ showSideBar = false }) {
+export default function Sidebar({ showSideBar = false, children }) {
   const [show, setShow] = useState(showSideBar);
 
   useEffect(() => {
@@ -55,6 +55,7 @@ export default function Sidebar({ showSideBar = false }) {
       />
       <SidebarBtn path={"/profile"} icon={User} btn={"Profile"} show={show} />
       {show && <SectionBreak />}
+      {show && children}
     </aside>
   );
 }

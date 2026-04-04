@@ -4,17 +4,60 @@ import { useAuth } from "../context/AuthContext";
 import { fetchUserItems, listenUserItems } from "../lib/items";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import VaultItemCard from "../components/ui/VaultItemCard";
-import { useEffect, useState } from "react";
-import { sortByLatest } from "../utils/filterOptions";
+import { useEffect, useMemo, useState } from "react";
+import {
+  filterByStatus,
+  filterByType,
+  sortByLatest,
+  sortByOldest,
+} from "../utils/filterOptions";
 import ErrorScreen from "../components/ui/ErrorScreen";
+import Filter from "../components/ui/Filter";
 
 export default function MyVault() {
   const { user } = useAuth();
+  const [items, setItems] = useState(null);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["movieDetail", user?.uid],
     queryFn: () => fetchUserItems(user.uid),
     enabled: !!user,
   });
+
+  useEffect(() => {
+    if (!user) return;
+    const unsubscribe = listenUserItems(user.uid, setItems);
+    return () => unsubscribe();
+  }, [user]);
+
+  const [filtersState, setFiltersState] = useState({
+    type: "all",
+    status: "all",
+    sort: "latest",
+  });
+
+  function updateFilter(key, value) {
+    setFiltersState((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }
+
+  const processedItems = useMemo(() => {
+    const sourceItems = items ?? data ?? [];
+
+    let result = [...sourceItems];
+    result = filterByType(result, filtersState.type);
+    result = filterByStatus(result, filtersState.status);
+
+    if (filtersState.sort === "latest") {
+      result = sortByLatest(result);
+    } else if (filtersState.sort === "oldest") {
+      result = sortByOldest(result);
+    }
+
+    return result;
+  }, [items, data, filtersState]);
 
   if (error) {
     return (
@@ -24,53 +67,90 @@ export default function MyVault() {
     );
   }
 
-  const latestItems = data ? sortByLatest(data) : [];
   return (
-    <MainLayout title={"My Vault"}>
+    <MainLayout
+      title={"My Vault"}
+      filters={
+        <FilterList filtersState={filtersState} updateFilter={updateFilter} />
+      }
+    >
       {isLoading && <SkeletonGrid count={6} />}
-      {!isLoading && latestItems.length > 0 && (
-        <CardContainer userId={user.uid} data={latestItems} user={user} />
+
+      {!isLoading && processedItems.length > 0 && (
+        <CardContainer data={processedItems} setItems={setItems} user={user} />
+      )}
+
+      {!isLoading && processedItems.length === 0 && (
+        <div className="w-full flex justify-center items-center py-20">
+          <h2 className="font-heading text-3xl text-center">
+            No matching items
+          </h2>
+        </div>
       )}
     </MainLayout>
   );
 }
 
-function CardContainer({ data, user }) {
-  const [items, setItems] = useState(data || []);
-  useEffect(() => {
-    if (!user) return;
-
-    const unsubscribe = listenUserItems(user.uid, setItems);
-
-    return () => unsubscribe();
-  }, [user]);
-
-  if (!items || items.length === 0) {
+function CardContainer({ data, setItems, user }) {
+  if (!data || data.length === 0) {
     return (
       <div className="w-full flex justify-center items-center py-20">
         <h2 className="font-heading text-3xl text-center">No added items</h2>
       </div>
     );
   }
+
   return (
     <div className="flex flex-wrap items-center gap-4 mb-8">
-      {items.map((item) => (
+      {data.map((item) => (
         <VaultItemCard
           key={item.id}
           data={item}
           userId={user.uid}
           onToggle={(id) => {
             setItems((prev) =>
-              prev.map((item) =>
+              (prev ?? []).map((item) =>
                 item.id === id ? { ...item, isWatched: !item.isWatched } : item,
               ),
             );
           }}
           onDelete={(id) => {
-            setItems((prev) => prev.filter((item) => item.id !== id));
+            setItems((prev) => (prev ?? []).filter((item) => item.id !== id));
           }}
         />
       ))}
+    </div>
+  );
+}
+
+function FilterList({ filtersState, updateFilter }) {
+  const typeFilterOptions = ["All", "Movie", "Tv", "Anime"];
+  const statusFilterOption = ["All", "Watched", "Not Watched"];
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Filter
+        filterBy="Type"
+        filterKey="type"
+        selected={filtersState.type}
+        onChange={updateFilter}
+        filterOptions={typeFilterOptions}
+      />
+
+      <Filter
+        filterBy="Status"
+        filterKey="status"
+        selected={filtersState.status}
+        onChange={updateFilter}
+        filterOptions={statusFilterOption}
+      />
+      <Filter
+        filterBy="Sort"
+        filterKey="sort"
+        selected={filtersState.sort}
+        onChange={updateFilter}
+        filterOptions={["Latest", "Oldest"]}
+      />
     </div>
   );
 }

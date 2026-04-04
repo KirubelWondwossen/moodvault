@@ -6,17 +6,20 @@ export default function Filter({
   filterKey,
 }) {
   return (
-    <div className="grid grid-cols-2 items-start w-full mt-3">
-      <h3 className="font-heading px-4 col-span-2">Filter by {filterBy}</h3>
-
-      {filterOptions.map((filter) => (
-        <FilterOptions
-          key={filter}
-          filter={filter}
-          selected={selected}
-          onSelect={(value) => onChange(filterKey, value)}
-        />
-      ))}
+    <div className="flex flex-col mt-3">
+      <h3 className="font-heading px-4 col-span-2">
+        {filterBy === "Sort" ? "Sort By Date" : `Filter by ${filterBy}`}
+      </h3>
+      <div className="flex flex-wrap items-start w-full">
+        {filterOptions.map((filter) => (
+          <FilterOptions
+            key={filter}
+            filter={filter}
+            selected={selected}
+            onSelect={(value) => onChange(filterKey, value)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

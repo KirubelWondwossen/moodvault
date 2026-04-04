@@ -4,12 +4,20 @@ import Sidebar from "./Sidebar";
 import { useAuth } from "../../context/AuthContext";
 import ErrorScreen from "../ui/ErrorScreen";
 
-export default function MainLayout({ children, title, showSideBar, backdrop }) {
+export default function MainLayout({
+  children,
+  title,
+  showSideBar,
+  backdrop,
+  filters,
+}) {
   const { error } = useAuth();
   return (
     <div className="flex h-screen overflow-hidden">
       <Toaster position="top-center" />
-      <Sidebar showSideBar={showSideBar} />
+
+      <Sidebar showSideBar={showSideBar}>{filters}</Sidebar>
+
       <div
         className={`flex flex-col flex-1 px-4 ${backdrop && "bg-cover bg-no-repeat bg-center"}`}
         style={
