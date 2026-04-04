@@ -10,10 +10,11 @@ import { getSeasonalAnime } from "../services/jikan";
 import { useAllMedia } from "../hooks/useAllMedia";
 import { SectionBreak } from "../components/ui/SectionBreak";
 import { useAICombinedMedia } from "../hooks/useAICombinedMedia";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorScreen from "../components/ui/ErrorScreen";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
+import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
 
 export default function Home() {
   const [mood, setMood] = useState("");
@@ -24,6 +25,8 @@ export default function Home() {
     queryKey: ["movieDetail", user.uid],
     queryFn: () => fetchUserItems(user.uid),
   });
+
+  const visibleCards = useGetVisibleCards();
 
   const latestItems = data ? sortByLatest(data) : [];
 
@@ -73,6 +76,7 @@ export default function Home() {
         aiResult={aiResult}
         aiError={aiError}
         handleNavigate={handleNavigate}
+        visibleCards={visibleCards}
       />
 
       <SectionBreak />
@@ -117,10 +121,16 @@ function MoodPicker({ setMood }) {
   );
 }
 
-function AIRecomendation({ aiResult, aiLoading, aiError, handleNavigate }) {
+function AIRecomendation({
+  aiResult,
+  aiLoading,
+  aiError,
+  handleNavigate,
+  visibleCards,
+}) {
   return (
     <div className="flex flex-col gap-2 mt-2">
-      {aiLoading && <SkeletonGrid count={6} />}
+      {aiLoading && <SkeletonGrid count={visibleCards} />}
 
       {!aiLoading && aiError && (
         <p className="text-red-500 text-center">
