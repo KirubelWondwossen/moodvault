@@ -13,7 +13,6 @@ import Button from "../components/ui/Button";
 import { ClipLoader } from "react-spinners";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import Logo from "../components/ui/Logo";
 
 export default function Signup() {
   const [email, setEmail] = useState("");

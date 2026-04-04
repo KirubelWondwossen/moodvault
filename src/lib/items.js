@@ -12,8 +12,8 @@ import {
   where,
 } from "firebase/firestore";
 
-import { db } from "./firebase";
-
+import { db, auth } from "./firebase";
+import { updatePassword } from "firebase/auth";
 /* =========================
    CREATE ITEM
 ========================= */
@@ -178,4 +178,24 @@ export function listenUserItems(userId, callback) {
   });
 
   return unsubscribe;
+}
+
+export async function updateUserName(userId, { firstName, lastName }) {
+  if (!userId) throw new Error("User not authenticated");
+
+  const ref = doc(db, "users", userId);
+
+  await updateDoc(ref, {
+    firstName,
+    lastName,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function updateUserPassword(newPassword) {
+  const user = auth.currentUser;
+
+  if (!user) throw new Error("User not authenticated");
+
+  await updatePassword(user, newPassword);
 }
