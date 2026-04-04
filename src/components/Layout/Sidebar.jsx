@@ -1,11 +1,20 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../ui/Logo";
-import { Home, Compass, Bookmark, User, Menu, X } from "lucide-react";
+import { Home, Compass, Bookmark, User, Menu, X, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function Sidebar({ showSideBar = false, children }) {
   const [show, setShow] = useState(showSideBar);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    await logout();
+    toast.success("Logged out successfully");
+    setTimeout(() => navigate("/"), 1000);
+  };
   useEffect(() => {
     setShow(showSideBar);
   }, [showSideBar]);
@@ -56,6 +65,8 @@ export default function Sidebar({ showSideBar = false, children }) {
       <SidebarBtn path={"/profile"} icon={User} btn={"Profile"} show={show} />
       {show && <SectionBreak />}
       {show && children}
+
+      <LogoutBtn handleLogout={handleLogout} show={show} />
     </aside>
   );
 }
@@ -92,4 +103,23 @@ function SidebarBtn({ icon: Icon, path, btn, show }) {
 }
 function SectionBreak() {
   return <span className="border-b border-borderColor px-16 py-2"></span>;
+}
+
+function LogoutBtn({ handleLogout, show }) {
+  return (
+    <div
+      className={`mt-auto border-background mb-2 cursor-pointer w-full p-2 border-2 transition-all duration-300 hover:border-l-primary text-tTertiary flex ${
+        show
+          ? "items-center gap-3 justify-start"
+          : "items-center justify-center"
+      }`}
+      onClick={handleLogout}
+    >
+      <LogOut size={show ? 24 : 28} />
+
+      {show && (
+        <span className="cursor-pointer no-underline font-heading">Logout</span>
+      )}
+    </div>
+  );
 }

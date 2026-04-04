@@ -10,13 +10,11 @@ import { ClipLoader } from "react-spinners";
 import { Navigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import ErrorScreen from "../components/ui/ErrorScreen";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const { user } = useAuth();
   if (user) return <Navigate to="/home" />;
@@ -36,17 +34,10 @@ export default function Login() {
     } catch (error) {
       console.error(error.message);
       toast.error(error.message);
-      setError(error);
       setLoading(false);
     }
   };
 
-  if (error)
-    return (
-      <div className="h-screen flex flex-col items-center">
-        <ErrorScreen />
-      </div>
-    );
   return (
     <AuthLayout>
       <Toaster position="top-center" />
