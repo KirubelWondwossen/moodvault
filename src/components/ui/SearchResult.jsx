@@ -1,7 +1,7 @@
-import { Dot } from "lucide-react";
+import { Dot, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function SearchResult({ results, isLoading }) {
+export default function SearchResult({ results, isLoading, setSearchTerm }) {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-2 max-h-[25rem] z-50 overflow-y-auto shadow-md p-3 rounded-md bg-[#191d23] absolute mt-2">
@@ -15,6 +15,15 @@ export default function SearchResult({ results, isLoading }) {
 
   return (
     <div className="z-50 flex flex-col items-start gap-2 max-h-[25rem] overflow-y-auto shadow-md p-3 rounded-md bg-[#191d23] absolute mt-2">
+      <div className="flex items-center justify-between w-full">
+        <h3 className="font-heading">Search results</h3>
+        <X
+          size={20}
+          className="cursor-pointer"
+          onClick={() => setSearchTerm("")}
+        />
+      </div>
+
       {results?.map((element) => (
         <ResultCard key={`${element.source}-${element.id}`} data={element} />
       ))}

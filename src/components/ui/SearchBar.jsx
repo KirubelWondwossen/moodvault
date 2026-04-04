@@ -22,7 +22,11 @@ export default function SearchBar() {
   return (
     <div className="relative w-full">
       <SearchBtn searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      <SearchResult results={results} isLoading={isLoading} />
+      <SearchResult
+        results={results}
+        isLoading={isLoading}
+        setSearchTerm={setSearchTerm}
+      />
     </div>
   );
 }
