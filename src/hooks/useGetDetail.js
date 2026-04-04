@@ -29,7 +29,6 @@ export function useGetDetail(type, id) {
   });
 
   const [movieDetail, tvDetail, animeDetail] = results;
-
   const isLoading = results.some((query) => query.isLoading);
   const error = results.some((query) => query.error);
 

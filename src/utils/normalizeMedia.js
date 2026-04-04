@@ -1,4 +1,5 @@
 import { formatDuration } from "./formatDuration";
+import { getTrailer } from "./getTrailer";
 import { normalizeDate } from "./normalizeDate";
 
 const FALLBACK_POSTER = "https://via.placeholder.com/500x750?text=No+Image";
@@ -86,7 +87,7 @@ export function normalizeMovieDetail(movie = {}) {
     status: movie?.status ?? null,
     duration: formatDuration(movie?.runtime ?? null),
 
-    trailer: null,
+    trailer: getTrailer(movie?.videos?.results),
 
     type: "movie",
     source: "tmdb",
@@ -109,14 +110,15 @@ export function normalizeTVDetail(tv = {}) {
     rating: formatRating(tv?.vote_average),
 
     overview: tv?.overview ?? "No description available",
-    duration: formatDuration(tv?.runtime ?? null),
+    duration: formatDuration(tv?.episode_run_time?.[0] ?? null),
+
     genres: tv?.genres?.map((g) => g.name) ?? [],
 
     releaseDate: tv?.first_air_date ?? null,
     status: tv?.status ?? null,
     episodes: tv?.number_of_episodes ?? null,
 
-    trailer: null,
+    trailer: getTrailer(tv?.videos?.results),
 
     type: "tv",
     source: "tmdb",
@@ -126,6 +128,11 @@ export function normalizeTVDetail(tv = {}) {
 export function normalizeAnimeDetail(anime = {}) {
   const poster = anime?.images?.jpg?.large_image_url ?? FALLBACK_POSTER;
   const backdrop = anime?.images?.jpg?.large_image_url ?? FALLBACK_POSTER;
+
+  const trailer =
+    anime?.trailer?.url ||
+    anime?.trailer?.embed_url?.replace("embed/", "watch?v=").split("?")[0] ||
+    null;
 
   return {
     id: anime?.mal_id ?? null,
@@ -150,9 +157,10 @@ export function normalizeAnimeDetail(anime = {}) {
     episodes: anime?.episodes ?? null,
     duration: anime?.duration ?? null,
 
-    trailer: anime?.trailer?.url ?? null,
+    trailer,
 
     type: "anime",
     source: "jikan",
+    season: anime?.season ?? null,
   };
 }

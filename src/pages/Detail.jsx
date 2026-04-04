@@ -6,6 +6,7 @@ import {
   Calendar,
   Hourglass,
   Layers,
+  Leaf,
   Minus,
   Play,
   Plus,
@@ -49,7 +50,6 @@ function DetailContent({ data }) {
   const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     async function check() {
       const exists = await checkItemSaved(user.uid, data.id);
@@ -94,16 +94,34 @@ function DetailContent({ data }) {
           iconStyle={"fill-tPrimary text-tPrimary"}
         />
       </div>
-
-      <FactContainer
-        text={data.releaseDate ? data.releaseDate : "N/A"}
-        icon={Calendar}
-        className={"mt-4"}
-      />
+      <div className="flex gap-10 items-center">
+        <FactContainer
+          text={data.releaseDate ? data.releaseDate : "N/A"}
+          icon={Calendar}
+          className={"mt-4"}
+        />
+        <FactContainer
+          text={
+            data.season
+              ? data.season.charAt(0).toUpperCase() + data.season.slice(1)
+              : "N/A"
+          }
+          icon={Leaf}
+          className={"mt-4"}
+        />
+      </div>
       <Overview overview={data.overview} />
 
       <div className="flex items-center gap-8 mt-3 relative">
-        <Button icon={Play} className={"bg-primary text-background"}>
+        <Button
+          icon={Play}
+          className={"bg-primary text-background"}
+          onClick={() => {
+            if (data?.trailer) {
+              window.open(data.trailer, "_blank", "noopener,noreferrer");
+            }
+          }}
+        >
           Watch Trailer
         </Button>
 
