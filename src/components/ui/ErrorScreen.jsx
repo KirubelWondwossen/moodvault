@@ -2,36 +2,39 @@ export default function ErrorScreen({ type }) {
   const handleReload = () => {
     window.location.reload();
   };
-  if (type === "offline") {
-    return (
-      <div className="flex flex-1 gap-2 items-center justify-center text-white">
-        <div className="text-center">
-          <h1 className="text-2xl font-heading font-bold mb-2">
-            No Internet Connection
-          </h1>
-          <p className="text-gray-400 font-body">
-            Check your network and try again.
-          </p>
-          <button
-            onClick={handleReload}
-            className="px-6 py-2 bg-primary text-white rounded-lg hover:opacity-80 transition"
-          >
-            Reload
-          </button>
-        </div>
-      </div>
-    );
-  }
+
+  const isOffline = type === "offline";
 
   return (
-    <div className="flex  flex-col gap-2 items-center justify-center text-white">
-      <h1 className="text-2xl font-heading font-bold">Something went wrong</h1>
-      <button
-        onClick={handleReload}
-        className="px-6 py-2 bg-primary text-white rounded-lg hover:opacity-80 transition"
-      >
-        Reload
-      </button>
+    <div className="flex flex-1 items-center justify-center px-4">
+      <div className="text-center max-w-md w-full space-y-4">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold">
+          {isOffline ? "No Internet Connection" : "Something went wrong"}
+        </h1>
+
+        {isOffline && (
+          <p className="text-sm sm:text-base text-gray-400 font-body">
+            Check your network and try again.
+          </p>
+        )}
+
+        <button
+          onClick={handleReload}
+          className="
+            w-full sm:w-auto
+            px-5 sm:px-6
+            py-2.5
+            bg-primary
+            text-white
+            rounded-lg
+            hover:opacity-80
+            transition
+            text-sm sm:text-base
+          "
+        >
+          Reload
+        </button>
+      </div>
     </div>
   );
 }

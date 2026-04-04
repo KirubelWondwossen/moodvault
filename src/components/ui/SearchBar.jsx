@@ -16,12 +16,13 @@ export default function SearchBar() {
     enabled: !!debouncedSearch,
   });
 
-  const results = debouncedSearch && searchQuery.data;
+  const results = debouncedSearch ? searchQuery.data || [] : [];
   const isLoading = debouncedSearch && searchQuery.isLoading;
 
   return (
-    <div className="relative w-full">
-      <SearchBtn searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+    <div className="relative w-full max-w-full sm:max-w-md md:max-w-lg">
+      <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
       <SearchResult
         results={results}
         isLoading={isLoading}
@@ -31,17 +32,27 @@ export default function SearchBar() {
   );
 }
 
-function SearchBtn({ searchTerm, setSearchTerm }) {
+function SearchInput({ searchTerm, setSearchTerm }) {
   return (
-    <div className="flex items-center relative text-tPrimary">
-      <Search className="w-5 left-3 absolute cursor-pointer text-[#ffffffde]" />
+    <div className="flex items-center relative">
+      <Search className="w-5 absolute left-3 text-[#ffffffde]" />
 
       <input
         type="search"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="text-heading pl-10 p-2 focus:outline-none w-72 bg-background border border-borderColor rounded-xl"
         placeholder="Search movies, anime, series..."
+        className="
+          w-full
+          pl-10 pr-3 py-2
+          text-sm sm:text-base
+          bg-background
+          border border-borderColor
+          rounded-xl
+          focus:outline-none
+          focus:ring-2 focus:ring-primary
+          transition-all
+        "
       />
     </div>
   );

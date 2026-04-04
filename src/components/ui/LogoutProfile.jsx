@@ -15,27 +15,55 @@ export default function LogoutProfile({ user }) {
   };
 
   return (
-    <div className="flex flex-col z-50 items-center gap-2 w-60 shadow-md p-3 rounded-md bg-[#191d23] absolute right-0 top-full mt-2">
-      <ProfilePic />
+    <div
+      className="
+        absolute right-0 top-full mt-2
+        z-[100]
 
-      <p className="font-body text-lg">
-        {user.firstName} {user.lastName}
+        w-[90vw] sm:w-64
+        max-w-xs
+
+        bg-[#191d23]
+        rounded-xl
+        shadow-lg
+        p-4
+
+        flex flex-col items-center gap-3
+      "
+    >
+      <ProfilePic size="md" />
+
+      <p className="font-body text-sm sm:text-base text-center">
+        {user?.firstName} {user?.lastName}
       </p>
 
+      {/* Profile */}
       <Link
-        to={"/profile"}
-        className="w-full self-start p-2 flex items-center gap-2 hover:bg-borderColor rounded-md"
+        to="/profile"
+        className="
+          w-full flex items-center gap-3
+          p-2 rounded-md
+          hover:bg-borderColor
+          transition
+        "
       >
-        <User className="w-6 text-tPrimary" />
-        <span className="font-heading">Profile</span>
+        <User className="w-5 sm:w-6 text-tPrimary" />
+        <span className="font-heading text-sm sm:text-base">Profile</span>
       </Link>
 
+      {/* Logout */}
       <div
         onClick={handleLogout}
-        className="cursor-pointer self-start p-2 flex items-center gap-2 hover:bg-borderColor w-full rounded-md"
+        className="
+          w-full flex items-center gap-3
+          p-2 rounded-md
+          cursor-pointer
+          hover:bg-borderColor
+          transition
+        "
       >
-        <LogOut className="w-6 text-tPrimary" />
-        <span className="font-heading">Logout</span>
+        <LogOut className="w-5 sm:w-6 text-tPrimary" />
+        <span className="font-heading text-sm sm:text-base">Logout</span>
       </div>
     </div>
   );
