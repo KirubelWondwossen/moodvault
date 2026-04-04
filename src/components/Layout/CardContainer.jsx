@@ -12,6 +12,7 @@ export default function CardContainer({
   handleNavigate,
   isLoading,
   isError,
+  vault,
 }) {
   const [visibleCards, setVisibleCards] = useState(6);
 
@@ -69,7 +70,7 @@ export default function CardContainer({
         {!isLoading && !isError && data?.length > 0 && (
           <div className="flex gap-4 items-center">
             {data.slice(0, visibleCards).map((movie) => (
-              <MovieCard key={movie.id} data={movie} />
+              <MovieCard key={movie.id} data={movie} vault={vault} />
             ))}
           </div>
         )}

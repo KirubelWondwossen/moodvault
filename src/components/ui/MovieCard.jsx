@@ -1,11 +1,15 @@
 import { Dot } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function MovieCard({ data }) {
+export default function MovieCard({ data, vault }) {
   if (!data) return null;
   return (
     <Link
-      to={`/details/${data.type}/${data.id}`}
+      to={
+        vault
+          ? `/details/${data.type}/${data.itemId}`
+          : `/details/${data.type}/${data.id}`
+      }
       className="group block w-full max-w-[190px] transition-transform duration-300"
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl shadow-sm">

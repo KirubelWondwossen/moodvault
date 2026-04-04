@@ -220,7 +220,7 @@ function Overview({ overview }) {
 function Button({ children, className, icon: Icon, ...props }) {
   return (
     <button
-      className={`group px-7 py-2 text-lg font-heading hover:scale-105 border-primary border transition-all duration-300 rounded-3xl ${className} flex items-center gap-3 relative`}
+      className={`group ml-2 px-7 py-2 text-lg font-heading hover:scale-105 border-primary border transition-all duration-300 rounded-3xl ${className} flex items-center gap-3 relative`}
       {...props}
     >
       {children}

@@ -95,6 +95,7 @@ export default function Home() {
         className={"mt-4 mb-5"}
         isLoading={false}
         isError={false}
+        vault={true}
       />
     </MainLayout>
   );
