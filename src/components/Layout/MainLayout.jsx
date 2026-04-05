@@ -8,7 +8,7 @@ import { useState } from "react";
 export default function MainLayout({
   children,
   title,
-  showSideBar = true,
+  showSideBar = false,
   backdrop,
   filters,
 }) {

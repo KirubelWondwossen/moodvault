@@ -12,7 +12,7 @@ export default function Sidebar({
   setMobileOpen,
   children,
 }) {
-  const show = showSideBar; // ✅ single source of truth
+  const show = showSideBar;
 
   const location = useLocation();
   const { logout } = useAuth();
@@ -24,14 +24,12 @@ export default function Sidebar({
     setTimeout(() => navigate("/"), 1000);
   };
 
-  // ✅ Auto close mobile on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
   return (
     <>
-      {/* Overlay (mobile only) */}
       {mobileOpen && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[40] md:hidden"
