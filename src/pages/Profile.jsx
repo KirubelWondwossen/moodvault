@@ -19,6 +19,7 @@ export default function Profile() {
   const [errorPass, setErrorPass] = useState(null);
 
   const { user } = useAuth();
+
   useEffect(() => {
     setFirstName(user.firstName);
     setLastName(user.lastName);
@@ -69,7 +70,6 @@ export default function Profile() {
 
     try {
       await updateUserPassword(newPassword);
-
       toast.success("Password updated successfully 🔐");
 
       setNewPassword("");
@@ -93,7 +93,7 @@ export default function Profile() {
 
   return (
     <MainLayout title={"User Profile"}>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <ProfileName
           firstName={firstName}
           lastName={lastName}
@@ -130,11 +130,12 @@ function ProfileName({
   return (
     <form
       onSubmit={handleUpdateName}
-      className="flex flex-col gap-5 p-5 bg-[#191d23]/60 rounded-md shadow-md h-fit  w-full"
+      className="flex flex-col gap-4 sm:gap-5 p-4 sm:p-5 bg-[#191d23]/60 rounded-md shadow-md h-fit w-full"
     >
-      <h2 className="font-heading font-semibold text-xl md:text-2xl text-center">
+      <h2 className="font-heading font-semibold text-lg sm:text-xl md:text-2xl text-center">
         Update Name
       </h2>
+
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
       <LabelInput
@@ -146,6 +147,7 @@ function ProfileName({
         onChange={(e) => setFirstName(e.target.value)}
         icon={UserRoundPlus}
       />
+
       <LabelInput
         required
         type="text"
@@ -155,6 +157,7 @@ function ProfileName({
         onChange={(e) => setLastName(e.target.value)}
         icon={UserRoundPlus}
       />
+
       <Button type="submit">
         {!loading && "Update Name"}
         {loading && <ClipLoader color="#fff" loading={loading} size={20} />}
@@ -175,12 +178,14 @@ function ProfilePassword({
   return (
     <form
       onSubmit={handleUpdatePassword}
-      className="flex flex-col gap-5 p-5 bg-[#191d23]/60 rounded-md shadow-md w-full"
+      className="flex flex-col gap-4 sm:gap-5 p-4 sm:p-5 bg-[#191d23]/60 rounded-md shadow-md w-full"
     >
-      <h2 className="font-heading font-semibold text-xl md:text-2xl text-center">
+      <h2 className="font-heading font-semibold text-lg sm:text-xl md:text-2xl text-center">
         Update Password
       </h2>
+
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
       <LabelInput
         required
         label={"New Password"}
@@ -191,6 +196,7 @@ function ProfilePassword({
         icon={Lock}
         min="8"
       />
+
       <LabelInput
         required
         label={"Confirm Password"}
@@ -205,6 +211,7 @@ function ProfilePassword({
       <p className="text-sm text-tTertiary font-body">
         Minimum length is 8 characters
       </p>
+
       <Button type="submit">
         {!loading && "Update Password"}
         {loading && <ClipLoader color="#fff" loading={loading} size={20} />}
