@@ -81,8 +81,8 @@ export default function MyVault() {
       )}
 
       {!isLoading && processedItems.length === 0 && (
-        <div className="w-full flex justify-center items-center py-20">
-          <h2 className="font-heading text-3xl text-center">
+        <div className="w-full flex justify-center items-center py-12 sm:py-16 md:py-20">
+          <h2 className="font-heading text-xl sm:text-2xl md:text-3xl text-center">
             No matching items
           </h2>
         </div>
@@ -92,34 +92,77 @@ export default function MyVault() {
 }
 
 function CardContainer({ data, setItems, user }) {
+  const [visibleCards, setVisibleCards] = useState(6);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
   if (!data || data.length === 0) {
     return (
-      <div className="w-full flex justify-center items-center py-20">
-        <h2 className="font-heading text-3xl text-center">No added items</h2>
+      <div className="w-full flex justify-center items-center py-12 sm:py-16 md:py-20">
+        <h2 className="font-heading text-xl sm:text-2xl md:text-3xl text-center">
+          No added items
+        </h2>
       </div>
     );
   }
 
+  const displayedData = isMobile ? data.slice(0, visibleCards) : data;
+
   return (
-    <div className="flex flex-wrap items-center gap-4 mb-8">
-      {data.map((item) => (
-        <VaultItemCard
-          key={item.id}
-          data={item}
-          userId={user.uid}
-          onToggle={(id) => {
-            setItems((prev) =>
-              (prev ?? []).map((item) =>
-                item.id === id ? { ...item, isWatched: !item.isWatched } : item,
-              ),
-            );
-          }}
-          onDelete={(id) => {
-            setItems((prev) => (prev ?? []).filter((item) => item.id !== id));
-          }}
-        />
-      ))}
-    </div>
+    <>
+      <div
+        className="
+          grid
+          grid-cols-2
+          sm:grid-cols-3
+          md:grid-cols-4
+          lg:grid-cols-5
+          xl:grid-cols-6
+          gap-3 sm:gap-4
+          mb-6 sm:mb-8
+        "
+      >
+        {displayedData.map((item) => (
+          <VaultItemCard
+            key={item.id}
+            data={item}
+            userId={user.uid}
+            onToggle={(id) => {
+              setItems((prev) =>
+                (prev ?? []).map((item) =>
+                  item.id === id
+                    ? { ...item, isWatched: !item.isWatched }
+                    : item,
+                ),
+              );
+            }}
+            onDelete={(id) => {
+              setItems((prev) => (prev ?? []).filter((item) => item.id !== id));
+            }}
+          />
+        ))}
+      </div>
+
+      {isMobile && visibleCards < data.length && (
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setVisibleCards((prev) => prev + 10)}
+            className="px-4 py-2 bg-primary text-white rounded-lg"
+          >
+            Load More
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -7,10 +7,11 @@ export default function Filter({
 }) {
   return (
     <div className="flex flex-col mt-3">
-      <h3 className="font-heading px-4 col-span-2">
+      <h3 className="font-heading px-4 col-span-2 text-sm sm:text-base">
         {filterBy === "Sort" ? "Sort By Date" : `Filter by ${filterBy}`}
       </h3>
-      <div className="flex flex-wrap items-start w-full">
+
+      <div className="flex flex-wrap items-start w-full gap-1 sm:gap-2 px-2 sm:px-0">
         {filterOptions.map((filter) => (
           <FilterOptions
             key={filter}
@@ -29,7 +30,7 @@ function FilterOptions({ filter, selected, onSelect }) {
 
   return (
     <label
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all duration-200`}
+      className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg cursor-pointer transition-all duration-200 w-full sm:w-auto`}
     >
       <input
         type="radio"
@@ -39,6 +40,7 @@ function FilterOptions({ filter, selected, onSelect }) {
         onChange={() => onSelect(filter.toLowerCase())}
         className="hidden"
       />
+
       <div
         className={`w-5 h-5 flex items-center justify-center rounded-full border-2 transition-all duration-200
         ${isActive ? "border-primary" : "border-gray-400"}`}
@@ -48,7 +50,8 @@ function FilterOptions({ filter, selected, onSelect }) {
           ${isActive ? "scale-100" : "scale-0"}`}
         />
       </div>
-      <span className="font-heading text-sm">{filter}</span>
+
+      <span className="font-heading text-sm truncate">{filter}</span>
     </label>
   );
 }
