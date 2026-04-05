@@ -26,7 +26,6 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
           onClick={() => setSearchTerm("")}
         />
       </div>
-
       {results.map((element) => (
         <ResultCard
           key={`${element.source}-${element.id}`}
