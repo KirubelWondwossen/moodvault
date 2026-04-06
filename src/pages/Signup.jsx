@@ -7,12 +7,20 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 // UI
 import AuthLayout from "../components/Layout/AuthLayout";
 import { Lock, Mail, UserRoundPlus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LabelInput from "../components/ui/LabelInput";
 import Button from "../components/ui/Button";
 import { ClipLoader } from "react-spinners";
 import { Toaster, toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+
+// ✅ validation helpers
+const validateEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+const validatePassword = (password) => {
+  return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+};
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -21,21 +29,44 @@ export default function Signup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    if (!password || !email || !firstName || !lastName) {
-      setLoading(false);
-      return toast.error("All fields must be filled");
+    // ✅ validation
+    if (!firstName.trim() || !lastName.trim()) {
+      return toast.error("First and last name are required");
+    }
+
+    if (!email) {
+      return toast.error("Email is required");
+    }
+
+    if (!validateEmail(email)) {
+      return toast.error("Invalid email format");
+    }
+
+    if (!password) {
+      return toast.error("Password is required");
+    }
+
+    if (!validatePassword(password)) {
+      return toast.error(
+        "Password must be at least 8 characters and include a number",
+      );
+    }
+
+    if (!confirmPassword) {
+      return toast.error("Please confirm your password");
     }
 
     if (password !== confirmPassword) {
-      setLoading(false);
       return toast.error("Passwords do not match");
     }
+
+    setLoading(true);
 
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
@@ -51,12 +82,13 @@ export default function Signup() {
       toast.success("Account created successfully");
       setTimeout(() => navigate("/"), 1000);
     } catch (error) {
-      console.log(error.message);
       console.error(error.message);
       toast.error(error.message);
+    } finally {
       setLoading(false);
     }
   };
+
   return (
     <AuthLayout>
       <Toaster position="top-center" />
@@ -67,6 +99,7 @@ export default function Signup() {
         <h2 className="font-heading font-semibold text-xl md:text-2xl text-center">
           Create Your Account
         </h2>
+
         <div className="flex flex-col md:flex-row gap-2">
           <LabelInput
             required
@@ -88,6 +121,7 @@ export default function Signup() {
             icon={UserRoundPlus}
           />
         </div>
+
         <LabelInput
           required
           label={"Email"}
@@ -97,6 +131,7 @@ export default function Signup() {
           onChange={(e) => setEmail(e.target.value)}
           icon={Mail}
         />
+
         <div className="flex flex-col md:flex-row gap-2">
           <LabelInput
             required
@@ -120,13 +155,16 @@ export default function Signup() {
             min="8"
           />
         </div>
+
         <p className="text-sm text-tTertiary font-body">
           Minimum length is 8 characters
         </p>
+
         <Button type="submit">
           {!loading && "Create account"}
           {loading && <ClipLoader color="#fff" loading={loading} size={20} />}
         </Button>
+
         <span className="text-center">
           Already have an account?{" "}
           <Link className="text-primary font-semibold" to={"/"}>
