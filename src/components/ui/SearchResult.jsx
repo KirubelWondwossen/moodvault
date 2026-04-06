@@ -15,24 +15,27 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
   }
 
   if (results.length === 0) return null;
-
   return (
     <DropdownWrapper>
-      <div className="flex items-center justify-between w-full mb-2">
-        <h3 className="font-heading text-sm sm:text-base">Search results</h3>
-        <X
-          size={20}
-          className="cursor-pointer"
-          onClick={() => setSearchTerm("")}
-        />
+      <div className="max-h-80 overflow-y-auto scrollbar-hide">
+        <div className="sticky top-0 z-10 flex items-center justify-between w-full mb-2 p-3 bg-[#22272e] ">
+          <h3 className="font-heading text-sm sm:text-base">Search results</h3>
+          <X
+            size={20}
+            className="cursor-pointer"
+            onClick={() => setSearchTerm("")}
+          />
+        </div>
+        <div className="px-3">
+          {results.map((element) => (
+            <ResultCard
+              key={`${element.source}-${element.id}`}
+              data={element}
+              setSearchTerm={setSearchTerm}
+            />
+          ))}
+        </div>
       </div>
-      {results.map((element) => (
-        <ResultCard
-          key={`${element.source}-${element.id}`}
-          data={element}
-          setSearchTerm={setSearchTerm}
-        />
-      ))}
     </DropdownWrapper>
   );
 }
@@ -41,6 +44,7 @@ function DropdownWrapper({ children }) {
   return (
     <div
       className="
+     scrollbar-hide
         absolute left-0 right-0
         mt-2
         z-[100]
@@ -50,7 +54,6 @@ function DropdownWrapper({ children }) {
         rounded-xl
         bg-[#191d23]
         shadow-lg
-        p-3
       "
     >
       {children}
@@ -86,6 +89,8 @@ function ResultCard({ data, setSearchTerm }) {
           </span>
           <Dot size={14} />
           <span>{data.type?.toUpperCase()}</span>
+          <Dot size={14} />
+          <span>{data?.year ?? "N/A"}</span>
         </div>
       </div>
     </Link>

@@ -6,11 +6,13 @@ const FALLBACK_POSTER = "https://via.placeholder.com/500x750?text=No+Image";
 const FALLBACK_BACKDROP =
   "https://via.placeholder.com/1280x720?text=No+Backdrop";
 
-// 🔥 helper (handles undefined safely)
 function formatRating(value) {
-  return typeof value === "number"
-    ? Number(value.toFixed(1)) // change to string if you prefer: value.toFixed(1)
-    : 0;
+  return typeof value === "number" ? Number(value.toFixed(1)) : 0;
+}
+
+function getYear(dateString) {
+  if (!dateString) return null;
+  return new Date(dateString).getFullYear() || null;
 }
 
 export function normalizeMovie(movie = {}) {
@@ -23,6 +25,8 @@ export function normalizeMovie(movie = {}) {
       : FALLBACK_POSTER,
 
     rating: formatRating(movie?.vote_average),
+
+    year: getYear(movie?.release_date),
 
     type: "movie",
     source: "tmdb",
@@ -39,6 +43,8 @@ export function normalizeTV(tv = {}) {
       : FALLBACK_POSTER,
 
     rating: formatRating(tv?.vote_average),
+
+    year: getYear(tv?.first_air_date),
 
     type: "tv",
     source: "tmdb",
@@ -58,6 +64,8 @@ export function normalizeAnime(anime = {}) {
     poster: anime?.images?.jpg?.image_url ?? FALLBACK_POSTER,
 
     rating: formatRating(anime?.score),
+
+    year: anime?.year || getYear(anime?.aired?.from),
 
     type: "anime",
     source: "jikan",
