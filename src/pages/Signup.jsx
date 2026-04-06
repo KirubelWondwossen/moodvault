@@ -12,15 +12,7 @@ import LabelInput from "../components/ui/LabelInput";
 import Button from "../components/ui/Button";
 import { ClipLoader } from "react-spinners";
 import { Toaster, toast } from "react-hot-toast";
-
-// ✅ validation helpers
-const validateEmail = (email) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
-
-const validatePassword = (password) => {
-  return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
-};
+import { validateEmail, validatePassword } from "../utils/validateAuth";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -35,7 +27,6 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    // ✅ validation
     if (!firstName.trim() || !lastName.trim()) {
       return toast.error("First and last name are required");
     }
@@ -52,7 +43,7 @@ export default function Signup() {
       return toast.error("Password is required");
     }
 
-    if (!validatePassword(password)) {
+    if (!validatePassword(password.trim())) {
       return toast.error(
         "Password must be at least 8 characters and include a number",
       );

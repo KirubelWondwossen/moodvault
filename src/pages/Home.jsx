@@ -77,6 +77,7 @@ export default function Home() {
         aiError={aiError}
         handleNavigate={handleNavigate}
         visibleCards={visibleCards}
+        mood={mood}
       />
 
       <SectionBreak />
@@ -116,6 +117,7 @@ function MoodPicker({ setMood }) {
         <Tags tag={"Happy"} onClick={() => setMood("Happy")} />
         <Tags tag={"Chill"} onClick={() => setMood("Chill")} />
         <Tags tag={"Excited"} onClick={() => setMood("Excited")} />
+        <Tags tag={"Bored"} onClick={() => setMood("Bored")} />
       </div>
     </div>
   );
@@ -127,6 +129,7 @@ function AIRecomendation({
   aiError,
   handleNavigate,
   visibleCards,
+  mood,
 }) {
   return (
     <div className="flex flex-col gap-2 mt-2">
@@ -141,7 +144,7 @@ function AIRecomendation({
       {!aiLoading && !aiError && aiResult?.length > 0 && (
         <CardContainer
           data={aiResult}
-          title={"Recommended For You"}
+          title={`Based on your ${mood} mood`}
           link={"/explore"}
           className={"mt-4"}
           handleNavigate={handleNavigate}

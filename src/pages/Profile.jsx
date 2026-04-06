@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { updateUserName, updateUserPassword } from "../lib/items";
 import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
+import { validatePassword } from "../utils/validateAuth";
 
 export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
@@ -54,23 +55,32 @@ export default function Profile() {
   async function handleUpdatePassword(e) {
     e.preventDefault();
 
-    if (!newPassword.trim()) {
+    const cleanPassword = newPassword.trim();
+
+    if (!cleanPassword) {
       return toast.error("Password cannot be empty");
     }
 
-    if (newPassword.length < 8) {
-      return toast.error("Password must be at least 8 characters");
+    if (!validatePassword(cleanPassword)) {
+      return toast.error(
+        "Password must be at least 8 characters and include a number",
+      );
     }
 
-    if (newPassword !== confirmPassword) {
+    if (!confirmPassword) {
+      return toast.error("Please confirm your password");
+    }
+
+    if (cleanPassword !== confirmPassword.trim()) {
       return toast.error("Passwords do not match");
     }
 
     setLoadingPassword(true);
 
     try {
-      await updateUserPassword(newPassword);
-      toast.success("Password updated successfully 🔐");
+      await updateUserPassword(cleanPassword);
+
+      toast.success("Password updated successfully");
 
       setNewPassword("");
       setConfirmPassword("");
