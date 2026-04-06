@@ -10,7 +10,7 @@ import { getSeasonalAnime } from "../services/jikan";
 import { useAllMedia } from "../hooks/useAllMedia";
 import { SectionBreak } from "../components/ui/SectionBreak";
 import { useAICombinedMedia } from "../hooks/useAICombinedMedia";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorScreen from "../components/ui/ErrorScreen";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
@@ -94,7 +94,7 @@ export default function Home() {
 
       <CardContainer
         data={latestItems}
-        title={"Continue Watching (from My Vault)"}
+        title={"Continue Watching (My Vault)"}
         link={"/myvault"}
         className={"mt-4 mb-5"}
         isLoading={false}
