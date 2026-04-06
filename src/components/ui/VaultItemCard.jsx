@@ -122,8 +122,9 @@ export default function VaultItemCard({ data, userId, onToggle, onDelete }) {
           </h3>
 
           <div className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-300 mt-0.5 sm:mt-1">
+            <span className="font-body">{data.type?.toUpperCase()}</span>
             <Dot size={12} className="sm:w-[14px] sm:h-[14px]" />
-            <span>{data.type?.toUpperCase()}</span>
+            <span className="font-body">{data?.year ?? "N/A"}</span>
           </div>
         </div>
       </div>

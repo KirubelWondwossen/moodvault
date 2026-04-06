@@ -14,16 +14,18 @@ import {
 
 import { db, auth } from "./firebase";
 import { updatePassword } from "firebase/auth";
-/* =========================
-   CREATE ITEM
-========================= */
+
 export async function saveItem(userId, item) {
   if (!userId) throw new Error("User not authenticated");
 
   const docRef = await addDoc(collection(db, "users", userId, "items"), {
     ...item,
+
+    year: item?.year ?? null,
+
     isWatched: item.isWatched ?? false,
-    type: item.type || "movie", // 👈 default type
+    type: item.type || "movie",
+
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -31,10 +33,6 @@ export async function saveItem(userId, item) {
   return docRef.id;
 }
 
-/* =========================
-   SUBSCRIBE (REAL-TIME)
-   Filters: isWatched + type
-========================= */
 export function subscribeToUserItems(userId, callback, filters = {}) {
   if (!userId) return;
 
@@ -111,10 +109,6 @@ export async function updateItemType(userId, itemId, type) {
   });
 }
 
-/* =========================
-   DELETE ITEM
-========================= */
-
 export async function deleteItem(userId, docId) {
   if (!userId || !docId) {
     throw new Error("Missing userId or docId");
@@ -123,10 +117,7 @@ export async function deleteItem(userId, docId) {
   const ref = doc(db, "users", userId, "items", docId);
   await deleteDoc(ref);
 }
-/* =========================
-   FETCH (ONE-TIME)
-   Filters supported
-========================= */
+
 export async function fetchUserItems(userId, filters = {}) {
   if (!userId) throw new Error("User not authenticated");
 

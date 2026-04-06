@@ -64,8 +64,9 @@ export default function MovieCard({ data, vault }) {
               mt-0.5 sm:mt-1
             "
           >
+            <span className="font-body">{data.type?.toUpperCase()}</span>
             <Dot size={12} className="sm:w-[14px] sm:h-[14px]" />
-            <span>{data.type?.toUpperCase()}</span>
+            <span className="font-body">{data?.year ?? "N/A"}</span>
           </div>
         </div>
       </div>

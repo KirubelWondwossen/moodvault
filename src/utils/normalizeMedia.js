@@ -90,7 +90,7 @@ export function normalizeMovieDetail(movie = {}) {
     overview: movie?.overview ?? "No description available",
 
     genres: movie?.genres?.map((g) => g.name) ?? [],
-
+    year: getYear(movie?.release_date),
     releaseDate: movie?.release_date ?? null,
     status: movie?.status ?? null,
     duration: formatDuration(movie?.runtime ?? null),
@@ -121,7 +121,7 @@ export function normalizeTVDetail(tv = {}) {
     duration: formatDuration(tv?.episode_run_time?.[0] ?? null),
 
     genres: tv?.genres?.map((g) => g.name) ?? [],
-
+    year: getYear(tv?.first_air_date),
     releaseDate: tv?.first_air_date ?? null,
     status: tv?.status ?? null,
     episodes: tv?.number_of_episodes ?? null,
@@ -159,7 +159,7 @@ export function normalizeAnimeDetail(anime = {}) {
     overview: anime?.synopsis ?? "No description available",
 
     genres: anime?.genres?.map((g) => g.name) ?? [],
-
+    year: anime?.year || getYear(anime?.aired?.from),
     releaseDate: normalizeDate(anime?.aired?.from) ?? null,
     status: anime?.status ?? null,
     episodes: anime?.episodes ?? null,
