@@ -22,21 +22,23 @@ export async function getFromOpenRouter(mood) {
           messages: [
             {
               role: "user",
-              content: `Suggest 24 titles for someone feeling ${mood}.
-Requirements:
-- Include a balanced mix of: movies, TV shows, and anime
-- Movies and TV shows MUST be primarily Hollywood or English-language mainstream productions
-- Anime can be from any region (focus on popular, well-known anime)
-- Prioritize popular, widely loved, or highly recommended titles
-- Favor strong audience reception, rewatch value, or cultural impact
-- Match the mood: ${mood}
-- Include a mix of classics and modern hits
-- Avoid very obscure titles unless widely praised
-- No duplicates
+              content: `Suggest 20 titles for someone feeling ${mood}.
 
-Output format:
-- Return ONLY a plain comma-separated list of titles
-- No numbering, no explanation, no extra text`,
+STRICT RULES:
+- ONLY include VERY POPULAR and WELL-KNOWN titles
+- Movies must be from TMDB top/popular or globally معروف (e.g. Avengers, Inception, Titanic)
+- Avoid obscure, indie, or niche titles
+- Prefer titles with HIGH popularity or box office success
+- Anime must be mainstream (e.g. Naruto, Attack on Titan, Death Note)
+- Use EXACT official titles (no variations)
+
+FORMAT RULES:
+- Return ONLY comma-separated titles
+- Do NOT include year
+- Do NOT include extra words
+- Example: Inception, Breaking Bad, Naruto
+
+Mood: ${mood}`,
             },
           ],
         },

@@ -16,6 +16,16 @@ import ErrorScreen from "../components/ui/ErrorScreen";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
 
+const moodMap = {
+  Happy: "feel-good comedy and uplifting movies",
+  Sad: "emotional drama and deep storytelling",
+  Relaxed: "calm, slow-paced, slice-of-life content",
+  Excited: "action-packed, thrilling movies",
+  Romantic: "love stories and romance",
+  Adventurous: "fantasy, adventure, epic journeys",
+  Scared: "horror and suspenseful content",
+};
+
 export default function Home() {
   const [mood, setMood] = useState("");
   const { user } = useAuth();
@@ -112,17 +122,22 @@ function MoodPicker({ setMood }) {
       <h3 className="font-heading font-semibold text-lg">
         How are you feeling today?
       </h3>
-      <div className="flex gap-5">
-        <Tags tag={"Sad"} onClick={() => setMood("Sad")} />
-        <Tags tag={"Happy"} onClick={() => setMood("Happy")} />
-        <Tags tag={"Chill"} onClick={() => setMood("Chill")} />
-        <Tags tag={"Excited"} onClick={() => setMood("Excited")} />
-        <Tags tag={"Bored"} onClick={() => setMood("Bored")} />
+
+      <div className="flex flex-wrap gap-3 md:gap-5 md:flex-nowrap">
+        <Tags tag={"Happy"} onClick={() => setMood(moodMap["Happy"])} />
+        <Tags tag={"Sad"} onClick={() => setMood(moodMap["Sad"])} />
+        <Tags tag={"Relaxed"} onClick={() => setMood(moodMap["Relaxed"])} />
+        <Tags tag={"Excited"} onClick={() => setMood(moodMap["Excited"])} />
+        <Tags tag={"Romantic"} onClick={() => setMood(moodMap["Romantic"])} />
+        <Tags
+          tag={"Adventurous"}
+          onClick={() => setMood(moodMap["Adventurous"])}
+        />
+        <Tags tag={"Scared"} onClick={() => setMood(moodMap["Scared"])} />
       </div>
     </div>
   );
 }
-
 function AIRecomendation({
   aiResult,
   aiLoading,
@@ -131,6 +146,7 @@ function AIRecomendation({
   visibleCards,
   mood,
 }) {
+  const moodM = Object.keys(moodMap).find((key) => moodMap[key] === mood);
   return (
     <div className="flex flex-col gap-2 mt-2">
       {aiLoading && <SkeletonGrid count={visibleCards} />}
@@ -144,7 +160,7 @@ function AIRecomendation({
       {!aiLoading && !aiError && aiResult?.length > 0 && (
         <CardContainer
           data={aiResult}
-          title={`Based on your ${mood} mood`}
+          title={`Based on your ${moodM} mood`}
           link={"/explore"}
           className={"mt-4"}
           handleNavigate={handleNavigate}

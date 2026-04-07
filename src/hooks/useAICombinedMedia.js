@@ -15,33 +15,22 @@ export function useAICombinedMedia(mood) {
   const normalizeTitles = (data) => {
     if (!data) return [];
 
-    if (typeof data === "string") {
-      return data
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean);
-    }
-
-    if (Array.isArray(data)) {
-      return data.map((t) => String(t).trim()).filter(Boolean);
-    }
-
-    return [];
+    return data
+      .split(",")
+      .map((t) =>
+        t
+          .replace(/\(.*?\)/g, "")
+          .replace(/-.*$/, "")
+          .replace(/[!]+/g, "")
+          .trim(),
+      )
+      .filter(Boolean);
   };
 
-  const rawTitles = normalizeTitles(aiQuery.data);
-
-  const titles = rawTitles
-    .map((t) =>
-      t
-        .replace(/\(.*?\)/g, "")
-        .replace(/-.*$/, "")
-        .replace(/[!]+/g, "")
-        .trim(),
-    )
-    .filter(Boolean);
+  const titles = normalizeTitles(aiQuery.data);
 
   const hasTitles = titles.length > 0;
+
   const movieQuery = useQuery({
     queryKey: ["aiMovies", titles],
     queryFn: () => searchMoviesMultiple(titles),
@@ -65,7 +54,12 @@ export function useAICombinedMedia(mood) {
     (hasTitles && movieQuery.error) ||
     (hasTitles && tvQuery.error);
 
-  const isEmptyAI = !aiQuery.isLoading && !hasTitles;
+  const isEmptyAI = !aiQuery.isLoading && aiResult.length === 0;
 
-  return { aiResult, aiLoading, aiError, isEmptyAI };
+  return {
+    aiResult,
+    aiLoading,
+    aiError,
+    isEmptyAI,
+  };
 }

@@ -2,13 +2,21 @@ import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MainLayout from "../components/Layout/MainLayout";
 import MovieCard from "../components/ui/MovieCard";
-
+const moodMap = {
+  Happy: "feel-good comedy and uplifting movies",
+  Sad: "emotional drama and deep storytelling",
+  Relaxed: "calm, slow-paced, slice-of-life content",
+  Excited: "action-packed, thrilling movies",
+  Romantic: "love stories and romance",
+  Adventurous: "fantasy, adventure, epic journeys",
+  Scared: "horror and suspenseful content",
+};
 export default function MoreMoodResult() {
   const location = useLocation();
 
   const mood = location.state?.mood;
   const initialResults = location.state?.initialResults;
-
+  const moodM = Object.keys(moodMap).find((key) => moodMap[key] === mood);
   if (!mood || !initialResults) {
     return (
       <MainLayout title="Mood Results">
@@ -20,9 +28,7 @@ export default function MoreMoodResult() {
   }
 
   return (
-    <MainLayout
-      title={`Based on Your (${mood[0].toUpperCase() + mood.slice(1)}) Mood`}
-    >
+    <MainLayout title={`Based on Your (${moodM}) Mood`}>
       <CardContainer data={initialResults} />
     </MainLayout>
   );

@@ -92,6 +92,7 @@ export const getTvDetails = async (tvId) => {
   const data = await res.json();
   return data;
 };
+
 export async function searchMoviesMultiple(queries = []) {
   const cleanedQueries = queries.map((q) => q.trim()).filter(Boolean);
 
@@ -103,13 +104,23 @@ export async function searchMoviesMultiple(queries = []) {
     ),
   );
 
-  const combined = results.flatMap((r) => r.results || []);
+  const bestMatches = results.flatMap((r) => {
+    const sorted = (r.results || []).sort(
+      (a, b) => b.popularity - a.popularity,
+    );
+    return sorted.slice(0, 3);
+  });
 
-  const unique = Array.from(
-    new Map(combined.map((item) => [item.id, item])).values(),
+  const filtered = bestMatches.filter(
+    (item) =>
+      item.popularity > 20 && item.vote_count > 50 && item.vote_average > 5,
   );
 
-  return unique;
+  const unique = Array.from(
+    new Map(filtered.map((item) => [item.id, item])).values(),
+  );
+
+  return unique.slice(0, 20);
 }
 
 export async function searchTVMultiple(queries = []) {
@@ -123,11 +134,21 @@ export async function searchTVMultiple(queries = []) {
     ),
   );
 
-  const combined = results.flatMap((r) => r.results || []);
+  const bestMatches = results.flatMap((r) => {
+    const sorted = (r.results || []).sort(
+      (a, b) => b.popularity - a.popularity,
+    );
+    return sorted.slice(0, 3);
+  });
 
-  const unique = Array.from(
-    new Map(combined.map((item) => [item.id, item])).values(),
+  const filtered = bestMatches.filter(
+    (item) =>
+      item.popularity > 20 && item.vote_count > 50 && item.vote_average > 5,
   );
 
-  return unique;
+  const unique = Array.from(
+    new Map(filtered.map((item) => [item.id, item])).values(),
+  );
+
+  return unique.slice(0, 20);
 }
