@@ -31,13 +31,3 @@ export const getAnimeDetails = async (animeId) => {
   const data = await res.json();
   return data.data;
 };
-
-// end points
-/**
- * /seasons/now
- * Filter
- * /anime?genres=1
- * Action = 1
- * Comedy = 4
- * Romance = 22
- */
