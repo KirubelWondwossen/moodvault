@@ -31,6 +31,18 @@ export function useAllMedia(movieQuery, tvQuery, animeQuery) {
 
     const combined = [...movies, ...tv, ...anime];
 
-    return shuffleWithSeed(combined, combined.length);
+    const uniqueMap = new Map();
+
+    combined.forEach((item) => {
+      const key = item.id ?? item.title?.toLowerCase();
+
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+
+    const unique = Array.from(uniqueMap.values());
+
+    return shuffleWithSeed(unique, unique.length);
   }, [movieQuery.data, tvQuery.data, animeQuery.data]);
 }
