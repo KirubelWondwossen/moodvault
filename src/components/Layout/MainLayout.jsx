@@ -43,8 +43,8 @@ export default function MainLayout({
           marginLeft:
             typeof window !== "undefined" && window.innerWidth >= 1024
               ? isExpanded
-                ? "14rem" // expanded (w-56)
-                : "4rem" // collapsed (w-16)
+                ? "14rem"
+                : "4rem"
               : "0",
           ...(backdrop && {
             backgroundImage: `
