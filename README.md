@@ -4,9 +4,9 @@ MoodVault is a **mood-based movie, TV show, and anime discovery app** that helps
 
 ---
 
-## 🚀 Live Demo
+## Live Demo
 
-👉 https://your-vercel-link.vercel.app
+ https://moodvaultapp.vercel.app/
 
 ---
 
