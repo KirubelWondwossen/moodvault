@@ -82,7 +82,7 @@ export function normalizeMovieDetail(movie = {}) {
       : FALLBACK_POSTER,
 
     backdrop: movie?.backdrop_path
-      ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+      ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}`
       : FALLBACK_BACKDROP,
 
     rating: formatRating(movie?.vote_average),
@@ -112,7 +112,7 @@ export function normalizeTVDetail(tv = {}) {
       : FALLBACK_POSTER,
 
     backdrop: tv?.backdrop_path
-      ? `https://image.tmdb.org/t/p/original${tv.backdrop_path}`
+      ? `https://image.tmdb.org/t/p/w780${tv.backdrop_path}`
       : FALLBACK_BACKDROP,
 
     rating: formatRating(tv?.vote_average),
