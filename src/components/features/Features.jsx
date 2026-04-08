@@ -1,29 +1,28 @@
 import Logo from "../ui/Logo";
-import { Library, ShieldCheck, RefreshCw, CheckCircle } from "lucide-react";
+import { Brain, Sparkles, Compass, Bookmark } from "lucide-react";
 
 const feats = [
   {
+    title: "Mood-Based Recommendations",
+    desc: "Discover movies, TV shows, and anime based on how you feel. Select a mood and get personalized suggestions instantly.",
+    icon: Brain,
+  },
+  {
+    title: "AI-Powered Suggestions",
+    desc: "Get smarter recommendations using AI that adapts to your mood and preferences, helping you find the perfect content every time.",
+    icon: Sparkles,
+  },
+  {
+    title: "Explore Trending Content",
+    desc: "Browse trending, popular, and top-rated movies, TV shows, and anime all in one place with a clean and intuitive interface.",
+    icon: Compass,
+  },
+  {
     title: "Personal Watch Vault",
-    desc: "Save movies, anime, and series in one organized space. Categorize them by status, mood, and progress so you always know what to watch next.",
-    icon: Library,
-  },
-  {
-    title: "Secure Accounts",
-    desc: "Your vault is protected with secure authentication. Every list is private and tied to your account no one else can access your data.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Real-Time Sync",
-    desc: "All changes update instantly across devices. Add, edit, or remove items and see updates in real-time without refreshing the page.",
-    icon: RefreshCw,
-  },
-  {
-    title: "Progress Tracking",
-    desc: "Track what you’re watching, mark items as completed, and monitor your progress so your entertainment journey stays organized.",
-    icon: CheckCircle,
+    desc: "Save and manage your favorite content in your personal vault. Add, remove, and organize what you want to watch anytime.",
+    icon: Bookmark,
   },
 ];
-
 export function Features() {
   return (
     <div className="lg:flex flex-col px-7 hidden">
