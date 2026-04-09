@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import SearchResult from "./SearchResult";
 import { useQuery } from "@tanstack/react-query";
 import useDebounce from "../../hooks/useDebounce";
@@ -23,11 +23,13 @@ export default function SearchBar() {
     <div className="relative w-full max-w-full sm:max-w-md md:max-w-lg">
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-      <SearchResult
-        results={results}
-        isLoading={isLoading}
-        setSearchTerm={setSearchTerm}
-      />
+      {debouncedSearch && (
+        <SearchResult
+          results={results}
+          isLoading={isLoading}
+          setSearchTerm={setSearchTerm}
+        />
+      )}
     </div>
   );
 }

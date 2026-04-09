@@ -1,4 +1,11 @@
-import { CircleCheck, CirclePlus, Dot, X, Loader2 } from "lucide-react";
+import {
+  CircleCheck,
+  CirclePlus,
+  Dot,
+  X,
+  Loader2,
+  SlidersHorizontal,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -8,6 +15,12 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
   const { user } = useAuth();
   const [savedIds, setSavedIds] = useState(new Set());
   const [docMap, setDocMap] = useState({});
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    type: "all",
+    rating: 0,
+    year: "all",
+  });
 
   useEffect(() => {
     async function load() {
@@ -33,20 +46,53 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
 
   if (results.length === 0) return null;
 
+  const filteredResults = results.filter((item) => {
+    if (filters.type !== "all" && item.type !== filters.type) return false;
+    if (filters.rating && item.rating < filters.rating) return false;
+
+    if (filters.year !== "all") {
+      const year = item.year;
+      if (filters.year === "2020s" && year < 2020) return false;
+      if (filters.year === "2010s" && (year < 2010 || year >= 2020))
+        return false;
+      if (filters.year === "2000s" && (year < 2000 || year >= 2010))
+        return false;
+      if (filters.year === "older" && year >= 2000) return false;
+    }
+
+    return true;
+  });
+
   return (
     <DropdownWrapper>
       <div className="max-h-80 overflow-y-auto scrollbar-hide">
         <div className="sticky top-0 z-10 flex items-center justify-between w-full mb-2 p-3 bg-[#22272e]">
           <h3 className="font-heading text-sm sm:text-base">Search results</h3>
-          <X
-            size={20}
-            className="cursor-pointer"
-            onClick={() => setSearchTerm("")}
-          />
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowFilters((prev) => !prev)}
+              className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm bg-white/5 hover:bg-white/10 rounded-md
+    transition-all
+  "
+            >
+              <SlidersHorizontal size={16} />
+              <span className="hidden sm:inline">Filter</span>
+            </button>
+            <X
+              size={20}
+              className="cursor-pointer"
+              onClick={() => setSearchTerm("")}
+            />
+          </div>
         </div>
 
+        {showFilters && (
+          <FilterDropdown filters={filters} setFilters={setFilters} />
+        )}
+
         <div className="px-3">
-          {results.map((element) => (
+          {filteredResults.map((element) => (
             <ResultCard
               data={element}
               isSaved={savedIds.has(element.id)}
@@ -106,7 +152,6 @@ function ResultCard({
           isWatched: false,
         });
 
-        // ✅ update state
         setSavedIds((prev) => new Set(prev).add(data.id));
 
         setDocMap((prev) => ({
@@ -114,9 +159,9 @@ function ResultCard({
           [data.id]: newDocId,
         }));
       } else {
-        if (!docId) return; // safety
+        if (!docId) return;
 
-        await deleteItem(user.uid, docId); // ✅ FIXED
+        await deleteItem(user.uid, docId);
 
         setSavedIds((prev) => {
           const newSet = new Set(prev);
@@ -148,7 +193,6 @@ function ResultCard({
         transition-all
       "
     >
-      {/* LEFT */}
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <img
           src={data.poster}
@@ -174,7 +218,6 @@ function ResultCard({
         </div>
       </div>
 
-      {/* RIGHT BUTTON */}
       <button
         onClick={handleToggle}
         disabled={loading}
@@ -216,6 +259,87 @@ function SkeletonCard() {
       <div className="flex flex-col gap-2 flex-1">
         <div className="h-3 w-32 bg-gray-600 rounded" />
         <div className="h-3 w-16 bg-gray-600 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function FilterDropdown({ filters, setFilters }) {
+  return (
+    <div
+      className="
+      px-3 pb-3
+      border-b border-white/10
+      animate-in fade-in slide-in-from-top-2 duration-200 font-heading
+    "
+    >
+      <div className="mb-3">
+        <p className="text-xs text-gray-400 mb-1">Type</p>
+        <div className="flex gap-2 flex-wrap">
+          {["all", "movie", "tv", "anime"].map((t) => (
+            <button
+              key={t}
+              onClick={() => setFilters((prev) => ({ ...prev, type: t }))}
+              className={`
+              px-2 py-1 rounded-md text-xs
+              transition-all
+              ${
+                filters.type === t
+                  ? "bg-primary text-background"
+                  : "bg-white/5 hover:bg-white/10"
+              }
+            `}
+            >
+              {t.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <p className="text-xs text-gray-400 mb-1">Minimum Rating</p>
+        <div className="flex gap-2 flex-wrap">
+          {[0, 5, 6, 7, 8].map((r) => (
+            <button
+              key={r}
+              onClick={() => setFilters((prev) => ({ ...prev, rating: r }))}
+              className={`
+              px-2 py-1 rounded-md text-xs
+              transition-all
+              ${
+                filters.rating === r
+                  ? "bg-primary text-background"
+                  : "bg-white/5 hover:bg-white/10"
+              }
+            `}
+            >
+              {r === 0 ? "All" : `⭐ ${r}+`}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-400 mb-1">Year</p>
+        <div className="flex gap-2 flex-wrap">
+          {["all", "2020s", "2010s", "2000s", "older"].map((y) => (
+            <button
+              key={y}
+              onClick={() => setFilters((prev) => ({ ...prev, year: y }))}
+              className={`
+              px-2 py-1 rounded-md text-xs
+              transition-all
+              ${
+                filters.year === y
+                  ? "bg-primary text-background"
+                  : "bg-white/5 hover:bg-white/10"
+              }
+            `}
+            >
+              {y.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
