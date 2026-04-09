@@ -2,13 +2,23 @@ export default function DetailSkeleton() {
   return (
     <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 h-full py-4 px-3 md:px-6 animate-pulse">
       {/* Image Skeleton */}
-      <div
-        className="
-          w-full max-w-[250px] sm:max-w-[300px] md:max-w-[350px]
-          h-[350px] sm:h-[420px] md:h-[500px]
-          rounded-xl bg-gray-700
-        "
-      />
+      <>
+        {/* MOBILE skeleton (matches full-width image) */}
+        <div
+          className="
+      md:hidden w-full h-[60vh] bg-gray-700"
+        />
+
+        {/* DESKTOP skeleton */}
+        <div
+          className="
+      hidden md:block
+      w-full max-w-[350px]
+      h-[500px]
+      rounded-xl bg-gray-700
+    "
+        />
+      </>
 
       {/* Content Skeleton */}
       <div className="w-full flex flex-col gap-4">

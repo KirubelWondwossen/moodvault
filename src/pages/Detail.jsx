@@ -41,14 +41,29 @@ export default function Detail() {
 
 function Image({ data }) {
   return (
-    <img
-      src={data?.poster || "/no-image.png"}
-      className="
-        w-full max-w-[250px] sm:max-w-[300px] md:max-w-[350px]
-        h-auto object-contain rounded-xl
-        shadow-[0_0_30px_rgba(88,166,255,0.35),0_0_60px_rgba(56,139,253,0.2)]
-      "
-    />
+    <>
+      <div
+        className="
+          md:hidden w-full h-[60vh] relative
+        "
+      >
+        <img
+          src={data?.poster || "/no-image.png"}
+          className="w-full h-full object-cover"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117] via-[#0d1117]/70 to-transparent" />
+      </div>
+
+      <img
+        src={data?.poster || "/no-image.png"}
+        className="
+          hidden md:block
+          w-full max-w-[350px]
+          h-auto object-contain rounded-xl
+        "
+      />
+    </>
   );
 }
 
@@ -70,19 +85,16 @@ function DetailContent({ data }) {
 
   return (
     <div className="w-full flex flex-col gap-4 mb-4 overflow-y-auto scrollbar-hide">
-      {/* Title */}
       <h1 className="font-heading font-bold text-2xl sm:text-3xl md:text-5xl lg:text-6xl">
         {data.title}
       </h1>
 
-      {/* Genres */}
       <div className="flex flex-wrap gap-2 sm:gap-3">
         {data.genres?.map((el, i) => (
           <Tags tag={el} key={el.id ?? i} />
         ))}
       </div>
 
-      {/* Facts Row 1 */}
       <div className="flex flex-wrap gap-4 sm:gap-6 md:gap-10 items-center">
         <FactContainer
           text={data.rating ? data.rating + " / 10" : "N/A"}
@@ -109,7 +121,6 @@ function DetailContent({ data }) {
         />
       </div>
 
-      {/* Facts Row 2 */}
       <div className="flex flex-wrap gap-4 sm:gap-6 md:gap-10 items-center">
         <FactContainer text={data.releaseDate || "N/A"} icon={Calendar} />
         <FactContainer
