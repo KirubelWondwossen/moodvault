@@ -190,3 +190,31 @@ export async function updateUserPassword(newPassword) {
 
   await updatePassword(user, newPassword);
 }
+
+export async function fetchSavedItemsMap(userId) {
+  if (!userId) throw new Error("User not authenticated");
+
+  const q = query(
+    collection(db, "users", userId, "items"),
+    orderBy("createdAt", "desc"),
+  );
+
+  const snapshot = await getDocs(q);
+
+  const savedIds = new Set();
+  const docMap = {};
+
+  snapshot.docs.forEach((doc) => {
+    const data = doc.data();
+
+    if (data.itemId) {
+      savedIds.add(data.itemId);
+      docMap[data.itemId] = doc.id; // ✅ store mapping
+    }
+  });
+
+  return {
+    savedIds,
+    docMap, // 👈 NEW
+  };
+}

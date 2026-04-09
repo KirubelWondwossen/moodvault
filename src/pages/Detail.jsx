@@ -71,7 +71,6 @@ function DetailContent({ data }) {
   const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log(data);
   useEffect(() => {
     async function check() {
       const exists = await checkItemSaved(user.uid, data.id);
