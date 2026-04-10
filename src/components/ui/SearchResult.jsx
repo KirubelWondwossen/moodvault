@@ -1,16 +1,12 @@
-import {
-  CircleCheck,
-  CirclePlus,
-  Dot,
-  X,
-  Loader2,
-  SlidersHorizontal,
-} from "lucide-react";
+import { X, SlidersHorizontal, SlidersVertical } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { deleteItem, fetchSavedItemsMap, saveItem } from "../../lib/items";
+import { fetchSavedItemsMap } from "../../lib/items";
 import NoResults from "./NoResults";
+import { SearchSkeletonCard } from "./SearchSkeletonCard";
+import { FilterDropdown } from "./FilterDropdown";
+import SearchResultCard from "./SearchResultCard";
+import { DropdownWrapper } from "./DropdownWrapper";
 
 export default function SearchResult({ results, isLoading, setSearchTerm }) {
   const { user } = useAuth();
@@ -39,7 +35,7 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
     return (
       <DropdownWrapper>
         {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonCard key={i} />
+          <SearchSkeletonCard key={i} />
         ))}
       </DropdownWrapper>
     );
@@ -68,6 +64,7 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
         <DropdownHeader
           setSearchTerm={setSearchTerm}
           setShowFilters={setShowFilters}
+          showFilters={showFilters}
         />
 
         {showFilters && (
@@ -79,12 +76,14 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
             <NoResults />
           ) : (
             filteredResults.map((element) => (
-              <ResultCard
+              <SearchResultCard
+                key={element.id}
                 data={element}
                 isSaved={savedIds.has(element.id)}
                 docId={docMap[element.id]}
                 setSavedIds={setSavedIds}
                 setDocMap={setDocMap}
+                user={user}
               />
             ))
           )}
@@ -94,257 +93,38 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
   );
 }
 
-function DropdownWrapper({ children }) {
+function DropdownHeader({ showFilters, setShowFilters, setSearchTerm }) {
   return (
     <div
-      className="
-        absolute left-0 right-0 mt-2 z-[100]
-        w-[80vw] sm:w-[500px] md:w-[650px] lg:w-[750px]
-        max-h-[60vh] overflow-y-auto
-        rounded-xl bg-[#191d23] shadow-lg scrollbar-hide
-      "
-    >
-      {children}
-    </div>
-  );
-}
-
-function ResultCard({
-  data,
-  setSearchTerm,
-  isSaved,
-  docId,
-  setSavedIds,
-  setDocMap,
-}) {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
-
-  async function handleToggle(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!user?.uid || loading) return;
-
-    setLoading(true);
-
-    try {
-      if (!isSaved) {
-        const newDocId = await saveItem(user.uid, {
-          itemId: data.id,
-          type: data.type,
-          title: data.title,
-          poster: data.poster,
-          year: data.year,
-          isWatched: false,
-        });
-
-        setSavedIds((prev) => new Set(prev).add(data.id));
-
-        setDocMap((prev) => ({
-          ...prev,
-          [data.id]: newDocId,
-        }));
-      } else {
-        if (!docId) return;
-
-        await deleteItem(user.uid, docId);
-
-        setSavedIds((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(data.id);
-          return newSet;
-        });
-
-        setDocMap((prev) => {
-          const copy = { ...prev };
-          delete copy[data.id];
-          return copy;
-        });
+      className={
+        "sticky top-0 z-10 flex items-center justify-between w-full mb-2 p-3 bg-[#22272e]"
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <Link
-      to={`/details/${data.type}/${data.id}`}
-      onClick={() => setSearchTerm("")}
-      className="
-        group flex items-center justify-between
-        p-2 rounded-md
-        hover:bg-borderColor
-        transition-all
-      "
     >
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <img
-          src={data.poster}
-          alt={data.title}
-          className="w-10 sm:w-12 aspect-[2/3] object-cover rounded-md"
-        />
-
-        <div className="flex flex-col overflow-hidden">
-          <h3 className="text-sm font-medium truncate">{data.title}</h3>
-
-          <div className="flex items-center gap-1 text-xs text-gray-400">
-            <span>
-              ⭐{" "}
-              {data.rating && data.rating !== 0
-                ? data.rating.toFixed(1)
-                : "N/A"}
-            </span>
-            <Dot size={14} />
-            <span>{data.type?.toUpperCase()}</span>
-            <Dot size={14} />
-            <span>{data?.year ?? "N/A"}</span>
-          </div>
-        </div>
-      </div>
-
-      <button
-        onClick={handleToggle}
-        disabled={loading}
-        title={isSaved ? "Remove from Vault" : "Add to Vault"}
-        className={`
-          ml-2 flex items-center justify-center
-          w-8 h-8 sm:w-9 sm:h-9
-          rounded-full
-          transition-all duration-300
-          shrink-0
-          
-          ${
-            isSaved
-              ? "bg-primary text-background shadow-[0_0_10px_rgba(88,166,255,0.5)]"
-              : "bg-white/5 hover:bg-white/10"
-          }
-
-          opacity-100 sm:opacity-0 sm:group-hover:opacity-100
-          hover:scale-110 active:scale-95
-          disabled:opacity-50
-        `}
-      >
-        {loading ? (
-          <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-        ) : isSaved ? (
-          <CircleCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-        ) : (
-          <CirclePlus className="w-4 h-4 sm:w-5 sm:h-5" />
-        )}
-      </button>
-    </Link>
-  );
-}
-
-function SkeletonCard() {
-  return (
-    <div className="flex items-center gap-3 p-2 animate-pulse">
-      <div className="w-10 sm:w-12 aspect-[2/3] bg-gray-600 rounded-md" />
-      <div className="flex flex-col gap-2 flex-1">
-        <div className="h-3 w-32 bg-gray-600 rounded" />
-        <div className="h-3 w-16 bg-gray-600 rounded" />
-      </div>
-    </div>
-  );
-}
-
-function FilterDropdown({ filters, setFilters }) {
-  return (
-    <div
-      className="
-      px-3 pb-3
-      border-b border-white/10
-      animate-in fade-in slide-in-from-top-2 duration-200 font-heading
-    "
-    >
-      <div className="mb-3">
-        <p className="text-xs text-gray-400 mb-1">Type</p>
-        <div className="flex gap-2 flex-wrap">
-          {["all", "movie", "tv", "anime"].map((t) => (
-            <button
-              key={t}
-              onClick={() => setFilters((prev) => ({ ...prev, type: t }))}
-              className={`
-              px-2 py-1 rounded-md text-xs
-              transition-all
-              ${
-                filters.type === t
-                  ? "bg-primary text-background"
-                  : "bg-white/5 hover:bg-white/10"
-              }
-            `}
-            >
-              {t.toUpperCase()}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-3">
-        <p className="text-xs text-gray-400 mb-1">Minimum Rating</p>
-        <div className="flex gap-2 flex-wrap">
-          {[0, 5, 6, 7, 8].map((r) => (
-            <button
-              key={r}
-              onClick={() => setFilters((prev) => ({ ...prev, rating: r }))}
-              className={`
-              px-2 py-1 rounded-md text-xs
-              transition-all
-              ${
-                filters.rating === r
-                  ? "bg-primary text-background"
-                  : "bg-white/5 hover:bg-white/10"
-              }
-            `}
-            >
-              {r === 0 ? "All" : `⭐ ${r}+`}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <p className="text-xs text-gray-400 mb-1">Year</p>
-        <div className="flex gap-2 flex-wrap">
-          {["all", "2020s", "2010s", "2000s", "older"].map((y) => (
-            <button
-              key={y}
-              onClick={() => setFilters((prev) => ({ ...prev, year: y }))}
-              className={`
-              px-2 py-1 rounded-md text-xs
-              transition-all
-              ${
-                filters.year === y
-                  ? "bg-primary text-background"
-                  : "bg-white/5 hover:bg-white/10"
-              }
-            `}
-            >
-              {y.toUpperCase()}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DropdownHeader({ setShowFilters, setSearchTerm }) {
-  return (
-    <div className="sticky top-0 z-10 flex items-center justify-between w-full mb-2 p-3 bg-[#22272e]">
       <h3 className="font-heading text-sm sm:text-base">Search results</h3>
 
       <div className="flex items-center gap-2">
         <button
           onClick={() => setShowFilters((prev) => !prev)}
-          className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm bg-white/5 hover:bg-white/10 rounded-md
-    transition-all
-  "
+          className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm bg-white/5 hover:bg-white/10 rounded-md transition-all "
         >
-          <SlidersHorizontal size={16} />
+          <div className="relative w-4 h-4">
+            <SlidersHorizontal
+              size={16}
+              className={`
+        absolute inset-0 transition-all duration-300 ease-in-out
+        ${showFilters ? "opacity-0 rotate-90 scale-75" : "opacity-100 rotate-0 scale-100"}
+      `}
+            />
+
+            <SlidersVertical
+              size={16}
+              className={`
+        absolute inset-0 transition-all duration-300 ease-in-out
+        ${showFilters ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-75"}
+      `}
+            />
+          </div>
+
           <span className="hidden sm:inline">Filter</span>
         </button>
         <X
