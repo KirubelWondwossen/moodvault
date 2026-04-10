@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { deleteItem, fetchSavedItemsMap, saveItem } from "../../lib/items";
+import NoResults from "./NoResults";
 
 export default function SearchResult({ results, isLoading, setSearchTerm }) {
   const { user } = useAuth();
@@ -44,8 +45,6 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
     );
   }
 
-  if (results.length === 0) return null;
-
   const filteredResults = results.filter((item) => {
     if (filters.type !== "all" && item.type !== filters.type) return false;
     if (filters.rating && item.rating < filters.rating) return false;
@@ -66,41 +65,29 @@ export default function SearchResult({ results, isLoading, setSearchTerm }) {
   return (
     <DropdownWrapper>
       <div className="max-h-80 overflow-y-auto scrollbar-hide">
-        <div className="sticky top-0 z-10 flex items-center justify-between w-full mb-2 p-3 bg-[#22272e]">
-          <h3 className="font-heading text-sm sm:text-base">Search results</h3>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowFilters((prev) => !prev)}
-              className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm bg-white/5 hover:bg-white/10 rounded-md
-    transition-all
-  "
-            >
-              <SlidersHorizontal size={16} />
-              <span className="hidden sm:inline">Filter</span>
-            </button>
-            <X
-              size={20}
-              className="cursor-pointer"
-              onClick={() => setSearchTerm("")}
-            />
-          </div>
-        </div>
+        <DropdownHeader
+          setSearchTerm={setSearchTerm}
+          setShowFilters={setShowFilters}
+        />
 
         {showFilters && (
           <FilterDropdown filters={filters} setFilters={setFilters} />
         )}
 
         <div className="px-3">
-          {filteredResults.map((element) => (
-            <ResultCard
-              data={element}
-              isSaved={savedIds.has(element.id)}
-              docId={docMap[element.id]}
-              setSavedIds={setSavedIds}
-              setDocMap={setDocMap}
-            />
-          ))}
+          {filteredResults.length === 0 ? (
+            <NoResults />
+          ) : (
+            filteredResults.map((element) => (
+              <ResultCard
+                data={element}
+                isSaved={savedIds.has(element.id)}
+                docId={docMap[element.id]}
+                setSavedIds={setSavedIds}
+                setDocMap={setDocMap}
+              />
+            ))
+          )}
         </div>
       </div>
     </DropdownWrapper>
@@ -340,6 +327,31 @@ function FilterDropdown({ filters, setFilters }) {
             </button>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function DropdownHeader({ setShowFilters, setSearchTerm }) {
+  return (
+    <div className="sticky top-0 z-10 flex items-center justify-between w-full mb-2 p-3 bg-[#22272e]">
+      <h3 className="font-heading text-sm sm:text-base">Search results</h3>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setShowFilters((prev) => !prev)}
+          className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm bg-white/5 hover:bg-white/10 rounded-md
+    transition-all
+  "
+        >
+          <SlidersHorizontal size={16} />
+          <span className="hidden sm:inline">Filter</span>
+        </button>
+        <X
+          size={20}
+          className="cursor-pointer"
+          onClick={() => setSearchTerm("")}
+        />
       </div>
     </div>
   );
