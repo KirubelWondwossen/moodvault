@@ -23,7 +23,6 @@ export default function MyVault() {
     queryFn: () => fetchUserItems(user.uid),
     enabled: !!user,
   });
-
   useEffect(() => {
     if (!user) return;
     const unsubscribe = listenUserItems(user.uid, setItems);

@@ -1,3 +1,5 @@
+import { GENRE_NAME_TO_ID } from "../utils/genreNameToId";
+
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 
@@ -151,4 +153,104 @@ export async function searchTVMultiple(queries = []) {
   );
 
   return unique.slice(0, 20);
+}
+
+export async function fetchMovieByGenres(genres = []) {
+  try {
+    // 1. Clean & validate input
+    const cleanedGenres = genres.map((g) => g?.trim()).filter(Boolean);
+
+    if (!cleanedGenres.length) {
+      return [];
+    }
+
+    // 2. Convert names → IDs safely
+    const genreIds = cleanedGenres
+      .map((g) => GENRE_NAME_TO_ID[g])
+      .filter(Boolean);
+
+    if (!genreIds.length) {
+      return [];
+    }
+
+    // 3. Build request
+    const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreIds.join(",")}`;
+
+    const response = await fetch(url);
+
+    // 4. Handle HTTP errors
+    if (!response.ok) {
+      throw new Error("Failed to fetch movies by genres");
+    }
+
+    const data = await response.json();
+
+    // 5. Safety check
+    const results = data.results || [];
+
+    // 6. Optional: filter low-quality results (like your other functions)
+    const filtered = results.filter(
+      (item) =>
+        item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
+    );
+
+    // 7. Optional: remove duplicates
+    const unique = Array.from(
+      new Map(filtered.map((item) => [item.id, item])).values(),
+    );
+
+    return unique;
+  } catch (error) {
+    console.error("fetchByGenres error:", error);
+    return [];
+  }
+}
+
+export async function fetchTVByGenres(genres = []) {
+  try {
+    // 1. Clean & validate input
+    const cleanedGenres = genres.map((g) => g?.trim()).filter(Boolean);
+
+    if (!cleanedGenres.length) {
+      return [];
+    }
+
+    // 2. Convert names → IDs safely
+    const genreIds = cleanedGenres
+      .map((g) => GENRE_NAME_TO_ID[g])
+      .filter(Boolean);
+
+    if (!genreIds.length) {
+      return [];
+    }
+
+    const url = `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreIds.join(",")}&sort_by=popularity.desc`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch TV shows by genres");
+    }
+
+    const data = await response.json();
+
+    // 5. Safety check
+    const results = data.results || [];
+
+    // 6. Filter low-quality results
+    const filtered = results.filter(
+      (item) =>
+        item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
+    );
+
+    // 7. Remove duplicates
+    const unique = Array.from(
+      new Map(filtered.map((item) => [item.id, item])).values(),
+    );
+
+    return unique;
+  } catch (error) {
+    console.error("fetchTVByGenres error:", error);
+    return [];
+  }
 }

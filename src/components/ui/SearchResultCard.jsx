@@ -13,7 +13,6 @@ export default function SearchResultCard({
   user,
 }) {
   const [loading, setLoading] = useState(false);
-
   async function handleToggle(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -26,10 +25,13 @@ export default function SearchResultCard({
       if (!isSaved) {
         const newDocId = await saveItem(user.uid, {
           itemId: data.id,
+          rating: data.rating,
+          source: data.source,
           type: data.type,
           title: data.title,
           poster: data.poster,
           year: data.year,
+          genres: data.genres,
           isWatched: false,
         });
 

@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import ErrorScreen from "../components/ui/ErrorScreen";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
+import { useRecommended } from "../hooks/useRecommended";
 
 const moodMap = {
   Happy: "feel-good comedy and uplifting movies",
@@ -60,7 +61,7 @@ export default function Home() {
   const isTrendingError = results.some((q) => q.isError);
 
   const { aiResult, aiLoading, aiError } = useAICombinedMedia(mood);
-
+  const { recommended, isLoadingRec, isErrorRec } = useRecommended();
   function handleNavigate() {
     navigate("/moremoodresult", {
       state: {
@@ -89,7 +90,16 @@ export default function Home() {
         visibleCards={visibleCards}
         mood={mood}
       />
+      <SectionBreak />
 
+      <CardContainer
+        data={recommended}
+        title={"Recommended for you"}
+        link={"/explore"}
+        className={"mt-4"}
+        isLoading={isLoadingRec}
+        isError={isErrorRec}
+      />
       <SectionBreak />
 
       <CardContainer

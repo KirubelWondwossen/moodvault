@@ -18,7 +18,6 @@ export default function SearchBar() {
 
   const results = debouncedSearch ? searchQuery.data || [] : [];
   const isLoading = debouncedSearch && searchQuery.isLoading;
-
   return (
     <div className="relative w-full max-w-full sm:max-w-md md:max-w-lg">
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
