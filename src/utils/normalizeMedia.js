@@ -1,10 +1,23 @@
 import { formatDuration } from "./formatDuration";
 import { getTrailer } from "./getTrailer";
 import { normalizeDate } from "./normalizeDate";
+import { TMDB_GENRES } from "./tmdbGenres";
 
 const FALLBACK_POSTER = "https://via.placeholder.com/500x750?text=No+Image";
 const FALLBACK_BACKDROP =
   "https://via.placeholder.com/1280x720?text=No+Backdrop";
+
+function normalizeGenres(genres, genreIds) {
+  if (Array.isArray(genres) && genres.length > 0) {
+    return genres.map((g) => g.name);
+  }
+
+  if (Array.isArray(genreIds) && genreIds.length > 0) {
+    return genreIds.map((id) => TMDB_GENRES[id]).filter(Boolean);
+  }
+
+  return [];
+}
 
 function formatRating(value) {
   return typeof value === "number" ? Number(value.toFixed(1)) : 0;
@@ -28,6 +41,8 @@ export function normalizeMovie(movie = {}) {
 
     year: getYear(movie?.release_date),
 
+    genres: normalizeGenres(movie?.genres, movie?.genre_ids),
+
     type: "movie",
     source: "tmdb",
   };
@@ -45,6 +60,8 @@ export function normalizeTV(tv = {}) {
     rating: formatRating(tv?.vote_average),
 
     year: getYear(tv?.first_air_date),
+
+    genres: normalizeGenres(tv?.genres, tv?.genre_ids),
 
     type: "tv",
     source: "tmdb",
@@ -66,6 +83,8 @@ export function normalizeAnime(anime = {}) {
     rating: formatRating(anime?.score),
 
     year: anime?.year || getYear(anime?.aired?.from),
+
+    genres: anime?.genres?.map((g) => g.name) ?? [],
 
     type: "anime",
     source: "jikan",

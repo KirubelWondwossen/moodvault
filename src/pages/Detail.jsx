@@ -23,7 +23,6 @@ import ErrorScreen from "../components/ui/ErrorScreen";
 export default function Detail() {
   const { id, type } = useParams();
   const { data, isLoading, error } = useGetDetail(type, id);
-
   return (
     <MainLayout showSideBar={false} backdrop={data?.backdrop}>
       {error && <ErrorScreen />}

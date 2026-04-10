@@ -19,12 +19,15 @@ export async function saveItem(userId, item) {
   if (!userId) throw new Error("User not authenticated");
 
   const docRef = await addDoc(collection(db, "users", userId, "items"), {
-    ...item,
-
-    year: item?.year ?? null,
-
+    itemId: item.id ?? null,
+    title: item.title ?? "Unknown Title",
+    type: item.type ?? "movie",
+    genres: Array.isArray(item.genres) ? item.genres : [],
+    rating: item.rating ?? 0,
+    year: item.year ?? null,
+    source: item.source ?? "unknown",
+    poster: item.poster ?? null,
     isWatched: item.isWatched ?? false,
-    type: item.type || "movie",
 
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
