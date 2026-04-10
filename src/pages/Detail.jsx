@@ -134,8 +134,7 @@ function DetailContent({ data }) {
 
       <Overview overview={data.overview} />
 
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mt-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mt-1">
         <Button
           icon={Play}
           className={"bg-primary text-background"}
@@ -232,12 +231,34 @@ function FactContainer({ text, iconStyle, icon: Icon, className }) {
   );
 }
 
-// Overview
 function Overview({ overview }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const text = overview || "No overview available.";
+  const limit = 160;
+
+  const isLong = text.length > limit;
+
   return (
-    <p className="font-body text-gray-300 leading-relaxed text-sm sm:text-base max-w-3xl mt-3">
-      {overview || "No overview available."}
-    </p>
+    <div className="max-w-3xl mt-3">
+      <p
+        className={`
+    font-body text-gray-300 leading-relaxed text-sm sm:text-base
+    ${expanded ? "" : "line-clamp-3"}
+  `}
+      >
+        {text}
+      </p>
+
+      {isLong && (
+        <button
+          onClick={() => setExpanded((prev) => !prev)}
+          className="mt-1 text-xs sm:text-sm text-primary hover:underline transition"
+        >
+          {expanded ? "See less" : "See more"}
+        </button>
+      )}
+    </div>
   );
 }
 
