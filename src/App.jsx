@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MoreExplore from "./pages/MoreExplore";
 import MoreMoodResult from "./pages/MoreMoodResults";
+import MoreRecommeded from "./pages/MoreRecommeded";
 
 function App() {
   return (
@@ -66,6 +67,14 @@ function App() {
         element={
           <ProtectedRoute>
             <MoreMoodResult />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/morerecommeded"
+        element={
+          <ProtectedRoute>
+            <MoreRecommeded />
           </ProtectedRoute>
         }
       />

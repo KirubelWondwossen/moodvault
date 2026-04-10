@@ -92,16 +92,25 @@ export default function Home() {
       />
       <SectionBreak />
 
-      <CardContainer
-        data={recommended}
-        title={"Recommended for you"}
-        link={"/explore"}
-        className={"mt-4"}
-        isLoading={isLoadingRec}
-        isError={isErrorRec}
-      />
-      <SectionBreak />
+      {recommended.length === 0 && !isLoadingRec && (
+        <p className="text-sm text-gray-400 mt-4 font-body">
+          Add items to your vault to get personalized recommendations
+        </p>
+      )}
 
+      {recommended.length > 0 && (
+        <>
+          <CardContainer
+            data={recommended}
+            title={"Recommended for you"}
+            link={"/morerecommeded"}
+            className={"mt-4"}
+            isLoading={isLoadingRec}
+            isError={isErrorRec}
+          />
+          <SectionBreak />
+        </>
+      )}
       <CardContainer
         data={trending}
         title={"Trending Now"}

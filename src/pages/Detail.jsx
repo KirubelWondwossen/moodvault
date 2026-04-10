@@ -155,10 +155,13 @@ function DetailContent({ data }) {
             if (!isSaved) {
               await saveItem(user.uid, {
                 itemId: data.id,
+                rating: data.rating,
+                source: data.source,
                 type: data.type,
                 title: data.title,
                 poster: data.poster,
                 year: data.year,
+                genres: data.genres,
                 isWatched: false,
               });
               setIsSaved(true);
