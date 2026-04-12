@@ -1,4 +1,5 @@
 import { OpenRouter } from "@openrouter/sdk";
+
 const MODELS = [
   "openai/gpt-4o-mini",
   "google/gemini-1.5-flash",
@@ -10,10 +11,14 @@ const MODELS = [
   "mistralai/mistral-large",
   "meta-llama/llama-3-70b-instruct",
 ];
+
 export async function getFromOpenRouter(mood) {
   const openRouter = new OpenRouter({
     apiKey: import.meta.env.VITE_OPENROUTER_KEY,
   });
+
+  let lastError = null;
+
   for (const model of MODELS) {
     try {
       const completion = await openRouter.chat.send({
@@ -48,23 +53,42 @@ Mood: ${mood}`,
     } catch (err) {
       const msg = err?.message?.toLowerCase() || "";
       const status = err?.status || err?.response?.status;
-      if (status === 402) {
-        console.warn(`Payment required: ${model} switching to other models`);
+
+      lastError = err;
+
+      if (!err.status) {
+        err.status = status || 0;
+      }
+
+      if (err.status === 402) {
+        console.warn(`Payment required: ${model} → switching`);
         continue;
       }
 
       if (
+        err.status === 429 ||
         msg.includes("rate limit") ||
-        msg.includes("too many requests") ||
-        msg.includes("overloaded")
+        msg.includes("too many requests")
       ) {
-        console.warn(`Rate limited: ${model}`);
+        err.status = 429;
+        console.warn(`Rate limited: ${model} → switching`);
         continue;
       }
-      if (status === 429 || msg.includes("rate limit")) {
-        console.warn(`Rate limited: ${model} switching to other models`);
+
+      if (msg.includes("overloaded") || err.status === 503) {
+        err.status = 503;
+        console.warn(`Model overloaded: ${model} → switching`);
         continue;
       }
+
+      console.warn(`Model failed: ${model}`, err);
+      continue;
     }
   }
+
+  const finalError = new Error("All models failed");
+  finalError.status = lastError?.status || 0;
+  finalError.original = lastError;
+
+  throw finalError;
 }

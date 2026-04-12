@@ -3,106 +3,140 @@ import { GENRE_NAME_TO_ID } from "../utils/genreNameToId";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 
+// -----------------------------
+// helpers
+// -----------------------------
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+async function fetchTMDB(url, retries = 2, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+
+    // Rate limit
+    if (res.status === 429) {
+      if (retries === 0) {
+        const err = new Error("Rate limited");
+        err.status = 429;
+        throw err;
+      }
+      await delay(1500);
+      return fetchTMDB(url, retries - 1, timeoutMs);
+    }
+
+    // Other HTTP errors
+    if (!res.ok) {
+      const err = new Error("TMDB request failed");
+      err.status = res.status;
+      throw err;
+    }
+
+    return await res.json();
+  } catch (err) {
+    clearTimeout(timeout);
+
+    // Timeout
+    if (err.name === "AbortError") {
+      err.status = 408;
+    }
+
+    // Network / unknown
+    if (!err.status) {
+      err.status = 0;
+    }
+
+    // Retry
+    if (retries > 0) {
+      await delay(1000);
+      return fetchTMDB(url, retries - 1, timeoutMs);
+    }
+
+    throw err;
+  }
+}
+
+// -----------------------------
+// basic fetches
+// -----------------------------
 export const getTrendingMovies = async () => {
-  const response = await fetch(
+  const data = await fetchTMDB(
     `${BASE_URL}/trending/movie/week?api_key=${API_KEY}`,
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch trending movies");
-  }
-
-  const data = await response.json();
-  return data.results;
+  return data.results || [];
 };
 
 export const getPopularMovies = async () => {
-  const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch trending movies");
-  }
-
-  const data = await response.json();
-  return data.results;
+  const data = await fetchTMDB(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
+  return data.results || [];
 };
 
 export const getPopularTv = async () => {
-  const response = await fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch trending movies");
-  }
-
-  const data = await response.json();
-  return data.results;
+  const data = await fetchTMDB(`${BASE_URL}/tv/popular?api_key=${API_KEY}`);
+  return data.results || [];
 };
 
 export const getTrendingTv = async () => {
-  const response = await fetch(
+  const data = await fetchTMDB(
     `${BASE_URL}/trending/tv/day?api_key=${API_KEY}`,
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch trending TV shows");
-  }
-
-  const data = await response.json();
-  return data.results;
+  return data.results || [];
 };
 
+// -----------------------------
+// search
+// -----------------------------
 export async function searchMovies(query) {
-  const res = await fetch(
+  if (!query?.trim()) return [];
+
+  const data = await fetchTMDB(
     `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`,
   );
 
-  const data = await res.json();
-  return data.results;
+  return data.results || [];
 }
 
 export async function searchTV(query) {
-  const res = await fetch(
+  if (!query?.trim()) return [];
+
+  const data = await fetchTMDB(
     `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}`,
   );
 
-  const data = await res.json();
-  return data.results;
+  return data.results || [];
 }
 
+// -----------------------------
+// details
+// -----------------------------
 export const getMovieDetails = async (movieId) => {
-  const res = await fetch(
+  const data = await fetchTMDB(
     `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&append_to_response=credits,videos`,
   );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch movie details");
-  }
-
-  const data = await res.json();
   return data;
 };
 
 export const getTvDetails = async (tvId) => {
-  const res = await fetch(
+  const data = await fetchTMDB(
     `${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&append_to_response=credits,videos`,
   );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch tv show details");
-  }
-
-  const data = await res.json();
   return data;
 };
 
+// -----------------------------
+// multi search
+// -----------------------------
 export async function searchMoviesMultiple(queries = []) {
-  const cleanedQueries = queries.map((q) => q.trim()).filter(Boolean);
+  const cleaned = queries.map((q) => q.trim()).filter(Boolean);
+  if (!cleaned.length) return [];
 
   const results = await Promise.all(
-    cleanedQueries.map((q) =>
-      fetch(
+    cleaned.map((q) =>
+      fetchTMDB(
         `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(q)}`,
-      ).then((res) => res.json()),
+      ),
     ),
   );
 
@@ -126,13 +160,14 @@ export async function searchMoviesMultiple(queries = []) {
 }
 
 export async function searchTVMultiple(queries = []) {
-  const cleanedQueries = queries.map((q) => q.trim()).filter(Boolean);
+  const cleaned = queries.map((q) => q.trim()).filter(Boolean);
+  if (!cleaned.length) return [];
 
   const results = await Promise.all(
-    cleanedQueries.map((q) =>
-      fetch(
+    cleaned.map((q) =>
+      fetchTMDB(
         `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(q)}`,
-      ).then((res) => res.json()),
+      ),
     ),
   );
 
@@ -155,102 +190,49 @@ export async function searchTVMultiple(queries = []) {
   return unique.slice(0, 20);
 }
 
+// -----------------------------
+// genre-based
+// -----------------------------
 export async function fetchMovieByGenres(genres = []) {
-  try {
-    // 1. Clean & validate input
-    const cleanedGenres = genres.map((g) => g?.trim()).filter(Boolean);
+  const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
+  if (!cleaned.length) return [];
 
-    if (!cleanedGenres.length) {
-      return [];
-    }
+  const genreIds = cleaned.map((g) => GENRE_NAME_TO_ID[g]).filter(Boolean);
 
-    // 2. Convert names → IDs safely
-    const genreIds = cleanedGenres
-      .map((g) => GENRE_NAME_TO_ID[g])
-      .filter(Boolean);
+  if (!genreIds.length) return [];
 
-    if (!genreIds.length) {
-      return [];
-    }
+  const data = await fetchTMDB(
+    `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreIds.join(",")}`,
+  );
 
-    // 3. Build request
-    const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreIds.join(",")}`;
+  const results = data.results || [];
 
-    const response = await fetch(url);
+  const filtered = results.filter(
+    (item) =>
+      item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
+  );
 
-    // 4. Handle HTTP errors
-    if (!response.ok) {
-      throw new Error("Failed to fetch movies by genres");
-    }
-
-    const data = await response.json();
-
-    // 5. Safety check
-    const results = data.results || [];
-
-    // 6. Optional: filter low-quality results (like your other functions)
-    const filtered = results.filter(
-      (item) =>
-        item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
-    );
-
-    // 7. Optional: remove duplicates
-    const unique = Array.from(
-      new Map(filtered.map((item) => [item.id, item])).values(),
-    );
-
-    return unique;
-  } catch (error) {
-    console.error("fetchByGenres error:", error);
-    return [];
-  }
+  return Array.from(new Map(filtered.map((item) => [item.id, item])).values());
 }
 
 export async function fetchTVByGenres(genres = []) {
-  try {
-    // 1. Clean & validate input
-    const cleanedGenres = genres.map((g) => g?.trim()).filter(Boolean);
+  const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
+  if (!cleaned.length) return [];
 
-    if (!cleanedGenres.length) {
-      return [];
-    }
+  const genreIds = cleaned.map((g) => GENRE_NAME_TO_ID[g]).filter(Boolean);
 
-    // 2. Convert names → IDs safely
-    const genreIds = cleanedGenres
-      .map((g) => GENRE_NAME_TO_ID[g])
-      .filter(Boolean);
+  if (!genreIds.length) return [];
 
-    if (!genreIds.length) {
-      return [];
-    }
+  const data = await fetchTMDB(
+    `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreIds.join(",")}&sort_by=popularity.desc`,
+  );
 
-    const url = `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreIds.join(",")}&sort_by=popularity.desc`;
+  const results = data.results || [];
 
-    const response = await fetch(url);
+  const filtered = results.filter(
+    (item) =>
+      item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
+  );
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch TV shows by genres");
-    }
-
-    const data = await response.json();
-
-    // 5. Safety check
-    const results = data.results || [];
-
-    // 6. Filter low-quality results
-    const filtered = results.filter(
-      (item) =>
-        item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
-    );
-
-    // 7. Remove duplicates
-    const unique = Array.from(
-      new Map(filtered.map((item) => [item.id, item])).values(),
-    );
-
-    return unique;
-  } catch (error) {
-    console.error("fetchTVByGenres error:", error);
-    return [];
-  }
+  return Array.from(new Map(filtered.map((item) => [item.id, item])).values());
 }
