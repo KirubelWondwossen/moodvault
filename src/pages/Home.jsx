@@ -16,6 +16,7 @@ import ErrorScreen from "../components/ui/ErrorScreen";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
 import { useRecommended } from "../hooks/useRecommended";
+import RecommendationEmpty from "../components/ui/RecommendationEmpty";
 
 const moodMap = {
   Happy: "feel-good comedy and uplifting movies",
@@ -31,7 +32,6 @@ export default function Home() {
   const [mood, setMood] = useState("");
   const { user } = useAuth();
   const navigate = useNavigate();
-
   const { data, isError } = useQuery({
     queryKey: ["movieDetail", user.uid],
     queryFn: () => fetchUserItems(user.uid),
@@ -61,7 +61,14 @@ export default function Home() {
   const isTrendingError = results.some((q) => q.isError);
 
   const { aiResult, aiLoading, aiError } = useAICombinedMedia(mood);
-  const { recommended, isLoadingRec, isErrorRec } = useRecommended();
+  const {
+    recommended,
+    isLoadingRec,
+    isErrorRec,
+    isEmptyRec,
+    noGenres,
+    noUserData,
+  } = useRecommended();
   function handleNavigate() {
     navigate("/moremoodresult", {
       state: {
@@ -92,13 +99,31 @@ export default function Home() {
       />
       <SectionBreak />
 
-      {recommended.length === 0 && !isLoadingRec && (
-        <p className="text-sm text-gray-400 mt-4 font-body">
-          Add items to your vault to get personalized recommendations
-        </p>
+      {!isLoadingRec && !isErrorRec && (
+        <>
+          {noUserData && (
+            <RecommendationEmpty
+              desc={"Start building your vault to get recommendations."}
+            />
+          )}
+
+          {noGenres && (
+            <RecommendationEmpty
+              desc={
+                "We need more genre data. Try adding different types of content."
+              }
+            />
+          )}
+
+          {isEmptyRec && (
+            <RecommendationEmpty
+              desc={"No recommendations found yet. Try exploring more content."}
+            />
+          )}
+        </>
       )}
 
-      {recommended.length > 0 && (
+      {!noUserData && !noGenres && (
         <>
           <CardContainer
             data={recommended}
