@@ -19,16 +19,25 @@ import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { Tags } from "../components/ui/Tags";
 import ErrorScreen from "../components/ui/ErrorScreen";
+import { getErrorType } from "../utils/getErrorType";
 
 export default function Detail() {
   const { id, type } = useParams();
   const { data, isLoading, error } = useGetDetail(type, id);
+
+  if (error && !data) {
+    return (
+      <MainLayout showSideBar={false}>
+        <ErrorScreen type={getErrorType(error)} />
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout showSideBar={false} backdrop={data?.backdrop}>
-      {error && <ErrorScreen />}
-      {isLoading && <DetailSkeleton />}
-
-      {!isLoading && !error && (
+      {isLoading ? (
+        <DetailSkeleton />
+      ) : (
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 h-full py-4 px-3 md:px-6">
           <Image data={data} />
           <DetailContent data={data} />
@@ -37,7 +46,6 @@ export default function Detail() {
     </MainLayout>
   );
 }
-
 function Image({ data }) {
   return (
     <>

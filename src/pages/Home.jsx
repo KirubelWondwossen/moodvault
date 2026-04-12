@@ -32,7 +32,7 @@ export default function Home() {
   const [mood, setMood] = useState("");
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { data, isError } = useQuery({
+  const { data, isUserItemError, isUserItemLoading } = useQuery({
     queryKey: ["movieDetail", user.uid],
     queryFn: () => fetchUserItems(user.uid),
   });
@@ -76,13 +76,6 @@ export default function Home() {
         initialResults: aiResult,
       },
     });
-  }
-  if (isError) {
-    return (
-      <MainLayout title={`Welcome, ${user.firstName}`}>
-        <ErrorScreen />
-      </MainLayout>
-    );
   }
 
   return (
@@ -136,6 +129,7 @@ export default function Home() {
           <SectionBreak />
         </>
       )}
+
       <CardContainer
         data={trending}
         title={"Trending Now"}
@@ -152,8 +146,8 @@ export default function Home() {
         title={"Continue Watching (My Vault)"}
         link={"/myvault"}
         className={"mt-4 mb-5"}
-        isLoading={false}
-        isError={false}
+        isLoading={isUserItemLoading}
+        isError={isUserItemError}
         vault={true}
       />
     </MainLayout>
@@ -195,12 +189,6 @@ function AIRecomendation({
     <div className="flex flex-col gap-2 mt-2">
       {aiLoading && <SkeletonGrid count={visibleCards} />}
 
-      {!aiLoading && aiError && (
-        <p className="text-red-500 text-center">
-          Failed to get recommendations
-        </p>
-      )}
-
       {!aiLoading && !aiError && aiResult?.length > 0 && (
         <CardContainer
           data={aiResult}
@@ -209,7 +197,7 @@ function AIRecomendation({
           className={"mt-4"}
           handleNavigate={handleNavigate}
           isLoading={false}
-          isError={false}
+          isError={aiError}
         />
       )}
     </div>

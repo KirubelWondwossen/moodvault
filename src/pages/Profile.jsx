@@ -8,6 +8,7 @@ import { updateUserName, updateUserPassword } from "../lib/items";
 import toast from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import { validatePassword } from "../utils/validateAuth";
+import { getErrorType } from "../utils/getErrorType";
 
 export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
@@ -99,6 +100,14 @@ export default function Profile() {
     } finally {
       setLoadingPassword(false);
     }
+  }
+
+  if (errorName || errorPass) {
+    return (
+      <MainLayout title={"User Profile"}>
+        <ErrorScreen type={getErrorType(errorName || errorPass)} />
+      </MainLayout>
+    );
   }
 
   return (

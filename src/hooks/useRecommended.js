@@ -73,7 +73,7 @@ export function useRecommended() {
     (hasSavedItems && hasGenres && (movieQuery.isLoading || tvQuery.isLoading));
 
   const isErrorRec = userItemsQuery.isError;
-
+  const errorRec = userItemsQuery.error;
   const noUserData = !userItemsQuery.isLoading && !hasSavedItems;
 
   const noGenres = hasSavedItems && !hasGenres;
@@ -88,5 +88,6 @@ export function useRecommended() {
     noUserData,
     noGenres,
     isEmptyRec,
+    errorRec,
   };
 }

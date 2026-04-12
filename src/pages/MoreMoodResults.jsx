@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MainLayout from "../components/Layout/MainLayout";
 import MovieCard from "../components/ui/MovieCard";
+import ErrorScreen from "../components/ui/ErrorScreen";
 const moodMap = {
   Happy: "feel-good comedy and uplifting movies",
   Sad: "emotional drama and deep storytelling",
@@ -16,13 +17,13 @@ export default function MoreMoodResult() {
 
   const mood = location.state?.mood;
   const initialResults = location.state?.initialResults;
-  const moodM = Object.keys(moodMap).find((key) => moodMap[key] === mood);
+  const moodM =
+    Object.keys(moodMap).find((key) => moodMap[key] === mood) || "Unknown";
+
   if (!mood || !initialResults) {
     return (
       <MainLayout title="Mood Results">
-        <p className="text-center text-sm sm:text-base text-red-500">
-          No data available. Please go back and try again.
-        </p>
+        <ErrorScreen type={"empty"} back={true} />
       </MainLayout>
     );
   }
@@ -49,11 +50,7 @@ function CardContainer({ data }) {
   }, []);
 
   if (!data || data.length === 0) {
-    return (
-      <h2 className="text-center text-base sm:text-lg md:text-xl">
-        No results found
-      </h2>
-    );
+    return <ErrorScreen type={"empty"} back={true} />;
   }
 
   const displayedData = isMobile ? data.slice(0, visibleCards) : data;

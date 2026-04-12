@@ -58,9 +58,9 @@ export default function CardContainer({
       </div>
 
       <div className="relative w-full">
-        {isLoading && <SkeletonGrid count={visibleCards} />}
+        {isLoading && !isError && <SkeletonGrid count={visibleCards} />}
 
-        {!isLoading && isError && <ErrorScreen />}
+        {!isLoading && isError && <ErrorScreen type="server" />}
 
         {!isLoading && !isError && !data?.length && (
           <p className="text-center text-sm sm:text-base md:text-lg">

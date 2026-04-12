@@ -6,6 +6,7 @@ import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import ErrorScreen from "../components/ui/ErrorScreen";
 import { useEffect, useState } from "react";
 import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
+import { getErrorType } from "../utils/getErrorType";
 
 const titles = {
   "trending-movie-tv": "Trending Movies & TV",
@@ -19,10 +20,10 @@ export default function MoreExplore() {
   const { data, isLoading, error } = useSeeMore(type);
   const visibleSkeleton = useGetVisibleCards();
 
-  if (error) {
+  if (error && !data) {
     return (
-      <MainLayout title={titles[type]}>
-        <ErrorScreen />
+      <MainLayout title={titles[type] || "Explore"}>
+        <ErrorScreen type={getErrorType(error)} back={true} />
       </MainLayout>
     );
   }
@@ -52,11 +53,7 @@ function CardContainer({ data }) {
   }, []);
 
   if (!data || data.length === 0) {
-    return (
-      <h2 className="text-center text-base sm:text-lg md:text-xl">
-        No data found
-      </h2>
-    );
+    return <ErrorScreen type={"empty"} />;
   }
 
   const displayedData = isMobile ? data.slice(0, visibleCards) : data;

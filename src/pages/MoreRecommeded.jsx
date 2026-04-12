@@ -4,14 +4,15 @@ import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
 import { useRecommended } from "../hooks/useRecommended";
 import MovieCard from "../components/ui/MovieCard";
+import { getErrorType } from "../utils/getErrorType";
 
 export default function MoreRecommeded() {
-  const { recommended, isLoadingRec, isErrorRec } = useRecommended();
+  const { recommended, isLoadingRec, isErrorRec, errorRec } = useRecommended();
   const visibleSkeleton = useGetVisibleCards();
   if (isErrorRec) {
     return (
       <MainLayout title={"Recommended for you"}>
-        <ErrorScreen />
+        <ErrorScreen type={getErrorType(errorRec)} back={true} />
       </MainLayout>
     );
   }

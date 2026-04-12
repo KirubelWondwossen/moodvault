@@ -13,6 +13,7 @@ import {
 } from "../utils/filterOptions";
 import ErrorScreen from "../components/ui/ErrorScreen";
 import Filter from "../components/ui/Filter";
+import { getErrorType } from "../utils/getErrorType";
 
 export default function MyVault() {
   const { user } = useAuth();
@@ -61,7 +62,7 @@ export default function MyVault() {
   if (error) {
     return (
       <MainLayout title={"My Vault"}>
-        <ErrorScreen />
+        <ErrorScreen type={getErrorType(error)} />
       </MainLayout>
     );
   }
