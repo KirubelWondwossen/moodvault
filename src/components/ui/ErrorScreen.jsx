@@ -1,41 +1,94 @@
+import { Hammer, Hourglass, SatelliteDish, TriangleAlert } from "lucide-react";
+
 export default function ErrorScreen({ type }) {
   const handleReload = () => {
     window.location.reload();
   };
 
+  const handleGoBack = () => {
+    window.history.back();
+  };
+
   const isOffline = type === "offline";
+  const isServer = type === "server";
+  const isRateLimit = type === "rate";
+
+  const title = isOffline
+    ? "No Internet Connection"
+    : isServer
+      ? "Service Temporarily Unavailable"
+      : isRateLimit
+        ? "Too Many Requests"
+        : "Something went wrong";
+
+  const message = isOffline
+    ? "Check your internet connection and try again."
+    : isServer
+      ? "We’re having trouble reaching the server. Please try again in a moment."
+      : isRateLimit
+        ? "You’re making requests too fast. Please wait a bit and try again."
+        : "An unexpected error occurred. Please try again.";
+
+  // ✅ icon selection
+  const Icon = isOffline
+    ? SatelliteDish
+    : isServer
+      ? Hammer
+      : isRateLimit
+        ? Hourglass
+        : TriangleAlert;
 
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-10 sm:py-0">
-      <div className="text-center max-w-md w-full space-y-5 sm:space-y-4">
-        <h1 className="text-2xl sm:text-2xl md:text-3xl font-heading font-bold leading-snug">
-          {isOffline ? "No Internet Connection" : "Something went wrong"}
+      <div className="text-center max-w-md w-full space-y-6">
+        {/* ✅ ICON FIX */}
+        <div className="flex justify-center">
+          <div className="p-4 sm:p-5 rounded-full bg-gray-800/60 border border-gray-700 shadow-md">
+            <Icon className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold leading-snug">
+          {title}
         </h1>
 
-        {isOffline && (
-          <p className="text-sm sm:text-base text-gray-400 font-body px-2 sm:px-0">
-            Check your network and try again.
-          </p>
-        )}
+        {/* Message */}
+        <p className="text-sm sm:text-base text-gray-400 font-body px-2">
+          {message}
+        </p>
 
-        <button
-          onClick={handleReload}
-          className="
-            w-full sm:w-auto
-            px-6
-            py-3 sm:py-2.5
-            bg-primary
-            text-white
-            rounded-xl sm:rounded-lg
-            active:scale-95 sm:active:scale-100
-            hover:opacity-80
-            transition
-            text-sm sm:text-base
-            font-medium
-          "
-        >
-          Reload
-        </button>
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={handleReload}
+            className="
+              w-full sm:w-auto
+              px-6 py-3 sm:py-2.5
+              bg-primary text-white
+              rounded-xl sm:rounded-lg
+              active:scale-95 hover:opacity-80
+              transition text-sm sm:text-base font-medium
+            "
+          >
+            Retry
+          </button>
+
+          <button
+            onClick={handleGoBack}
+            className="
+              w-full sm:w-auto
+              px-6 py-3 sm:py-2.5
+              border border-gray-600
+              text-gray-300
+              rounded-xl sm:rounded-lg
+              hover:bg-gray-800
+              transition text-sm sm:text-base font-medium
+            "
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     </div>
   );
