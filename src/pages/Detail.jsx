@@ -13,7 +13,7 @@ import {
   Star,
 } from "lucide-react";
 import DetailSkeleton from "../components/ui/DetailSkeleton";
-import { checkItemSaved, deleteItem, saveItem } from "../lib/items";
+import { deleteItem, fetchSavedItemsMap, saveItem } from "../lib/items";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
@@ -78,15 +78,33 @@ function DetailContent({ data }) {
   const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [docId, setDocId] = useState(null);
+
   useEffect(() => {
-    async function check() {
-      const exists = await checkItemSaved(user.uid, data.id);
-      setIsSaved(exists);
+    async function load() {
+      if (!user?.uid || !data?.id) return;
+
+      try {
+        const { savedIds, docMap } = await fetchSavedItemsMap(user.uid);
+
+        const exists = savedIds.has(data.id);
+        const id = docMap[data.id];
+
+        if (exists && typeof id === "string") {
+          setIsSaved(true);
+          setDocId(id);
+        } else {
+          setIsSaved(false);
+          setDocId(null);
+        }
+      } catch (err) {
+        console.error(err);
+        setIsSaved(false);
+        setDocId(null);
+      }
     }
 
-    if (user?.uid && data?.id) {
-      check();
-    }
+    load();
   }, [user?.uid, data?.id]);
 
   return (
@@ -160,25 +178,35 @@ function DetailContent({ data }) {
 
             setLoading(true);
 
-            if (!isSaved) {
-              await saveItem(user.uid, {
-                itemId: data.id,
-                rating: data.rating,
-                source: data.source,
-                type: data.type,
-                title: data.title,
-                poster: data.poster,
-                year: data.year,
-                genres: data.genres,
-                isWatched: false,
-              });
-              setIsSaved(true);
-            } else {
-              await deleteItem(user.uid, data.id);
-              setIsSaved(false);
-            }
+            try {
+              if (!isSaved) {
+                const newDocId = await saveItem(user.uid, {
+                  itemId: data.id,
+                  rating: data.rating,
+                  source: data.source,
+                  type: data.type,
+                  title: data.title,
+                  poster: data.poster,
+                  year: data.year,
+                  genres: data.genres,
+                  isWatched: false,
+                });
 
-            setLoading(false);
+                setIsSaved(true);
+                setDocId(newDocId);
+              } else {
+                if (!docId) return;
+
+                await deleteItem(user.uid, docId);
+
+                setIsSaved(false);
+                setDocId(null);
+              }
+            } catch (err) {
+              console.error(err);
+            } finally {
+              setLoading(false);
+            }
           }}
           className={`
             relative overflow-hidden px-5 sm:px-7 py-2 text-sm sm:text-lg font-heading

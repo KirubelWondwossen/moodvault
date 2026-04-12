@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import SearchResult from "./SearchResult";
 import { useQuery } from "@tanstack/react-query";
 import useDebounce from "../../hooks/useDebounce";
