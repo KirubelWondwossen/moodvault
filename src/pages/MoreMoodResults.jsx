@@ -1,8 +1,10 @@
 import { useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import MainLayout from "../components/Layout/MainLayout";
 import MovieCard from "../components/ui/MovieCard";
 import ErrorScreen from "../components/ui/ErrorScreen";
+import { useAICombinedMedia } from "../hooks/useAICombinedMedia";
+
 const moodMap = {
   Happy: "feel-good comedy and uplifting movies",
   Sad: "emotional drama and deep storytelling",
@@ -12,15 +14,18 @@ const moodMap = {
   Adventurous: "fantasy, adventure, epic journeys",
   Scared: "horror and suspenseful content",
 };
+
 export default function MoreMoodResult() {
   const location = useLocation();
-
   const mood = location.state?.mood;
-  const initialResults = location.state?.initialResults;
+
   const moodM =
     Object.keys(moodMap).find((key) => moodMap[key] === mood) || "Unknown";
 
-  if (!mood || !initialResults) {
+  const { aiResult, aiLoading, aiError, fetchNextPage, hasNextPage } =
+    useAICombinedMedia(mood);
+
+  if (!mood) {
     return (
       <MainLayout title="Mood Results">
         <ErrorScreen type={"empty"} back={true} />
@@ -30,30 +35,51 @@ export default function MoreMoodResult() {
 
   return (
     <MainLayout title={`Based on Your (${moodM}) Mood`}>
-      <CardContainer data={initialResults} />
+      <CardContainer
+        data={aiResult}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        loading={aiLoading}
+        error={aiError}
+      />
     </MainLayout>
   );
 }
 
-function CardContainer({ data }) {
-  const [visibleCards, setVisibleCards] = useState(6);
-  const [isMobile, setIsMobile] = useState(false);
+function CardContainer({ data, fetchNextPage, hasNextPage, loading, error }) {
+  const loaderRef = useRef(null);
 
   useEffect(() => {
-    const checkScreen = () => {
-      setIsMobile(window.innerWidth < 640);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+
+        if (first.isIntersecting && hasNextPage && !loading) {
+          fetchNextPage();
+        }
+      },
+      {
+        threshold: 0.2,
+        rootMargin: "200px",
+      },
+    );
+
+    const current = loaderRef.current;
+
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
     };
+  }, [hasNextPage, loading, fetchNextPage]);
 
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-    return () => window.removeEventListener("resize", checkScreen);
-  }, []);
-
-  if (!data || data.length === 0) {
-    return <ErrorScreen type={"empty"} back={true} />;
+  if (error) {
+    return <ErrorScreen type={"general"} back={true} />;
   }
 
-  const displayedData = isMobile ? data.slice(0, visibleCards) : data;
+  if (!loading && (!data || data.length === 0)) {
+    return <ErrorScreen type={"empty"} back={true} />;
+  }
 
   return (
     <>
@@ -69,21 +95,20 @@ function CardContainer({ data }) {
           mb-6 sm:mb-8
         "
       >
-        {displayedData.map((element) => (
+        {data.map((element) => (
           <MovieCard data={element} key={element.id} />
         ))}
       </div>
 
-      {isMobile && visibleCards < data.length && (
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={() => setVisibleCards((prev) => prev + 10)}
-            className="px-4 py-2 bg-primary text-white rounded-lg"
-          >
-            Load More
-          </button>
-        </div>
-      )}
+      <div ref={loaderRef} className="h-16 flex justify-center items-center">
+        {loading && (
+          <p className="text-sm opacity-70 font-body">Loading more...</p>
+        )}
+
+        {!hasNextPage && !loading && (
+          <p className="text-sm opacity-50">No more results</p>
+        )}
+      </div>
     </>
   );
 }

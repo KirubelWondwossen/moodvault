@@ -12,7 +12,6 @@ import { SectionBreak } from "../components/ui/SectionBreak";
 import { useAICombinedMedia } from "../hooks/useAICombinedMedia";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ErrorScreen from "../components/ui/ErrorScreen";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
 import { useRecommended } from "../hooks/useRecommended";
@@ -176,6 +175,7 @@ function MoodPicker({ setMood }) {
     </div>
   );
 }
+
 function AIRecomendation({
   aiResult,
   aiLoading,
