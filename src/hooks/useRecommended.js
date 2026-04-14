@@ -1,9 +1,9 @@
 import { useAuth } from "../context/AuthContext";
 import { fetchUserItems } from "../lib/items";
-import { fetchMovieByGenres, fetchTVByGenres } from "../services/tmdb";
-import { useQuery } from "@tanstack/react-query";
+import { fetchMovieByGenres, fetchTvByGenres } from "../services/tmdb";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useCombinedMedia } from "./useCombinedMedia";
+import { useCombinedAIMedia } from "./useCombinedMedia";
 
 export function useRecommended() {
   const { user } = useAuth();
@@ -13,12 +13,12 @@ export function useRecommended() {
     queryFn: () => fetchUserItems(user.uid),
     enabled: !!user?.uid,
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true,
   });
 
-  const savedItems = useMemo(() => {
-    return userItemsQuery.data || [];
-  }, [userItemsQuery.data]);
+  const savedItems = useMemo(
+    () => userItemsQuery.data ?? [],
+    [userItemsQuery.data],
+  );
 
   const topGenres = useMemo(() => {
     if (!savedItems.length) return [];
@@ -40,46 +40,64 @@ export function useRecommended() {
   const hasSavedItems = savedItems.length > 0;
   const hasGenres = topGenres.length > 0;
 
-  const movieQuery = useQuery({
+  const movieQuery = useInfiniteQuery({
     queryKey: ["recommendedMovies", topGenres],
-    queryFn: () => fetchMovieByGenres(topGenres),
-    enabled: hasSavedItems && hasGenres,
-    staleTime: 1000 * 60 * 10,
-    keepPreviousData: true,
-    retry: 2,
+    queryFn: ({ pageParam = 1 }) => fetchMovieByGenres(topGenres, pageParam),
+    enabled: hasGenres,
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.length) return undefined;
+      return allPages.length + 1;
+    },
   });
 
-  const tvQuery = useQuery({
+  const tvQuery = useInfiniteQuery({
     queryKey: ["recommendedTV", topGenres],
-    queryFn: () => fetchTVByGenres(topGenres),
-    enabled: hasSavedItems && hasGenres,
-    staleTime: 1000 * 60 * 10,
-    keepPreviousData: true,
-    retry: 2,
+    queryFn: ({ pageParam = 1 }) => fetchTvByGenres(topGenres, pageParam),
+    enabled: hasGenres,
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.length) return undefined;
+      return allPages.length + 1;
+    },
   });
 
-  const combined = useCombinedMedia(movieQuery, tvQuery);
+  const movieData = movieQuery.data?.pages.flat() || [];
+  const tvData = tvQuery.data?.pages.flat() || [];
+
+  const combined = useCombinedAIMedia(movieData, tvData);
 
   const recommended = useMemo(() => {
     if (!hasSavedItems || !hasGenres) return [];
 
     const savedIds = new Set(savedItems.map((item) => item.itemId));
 
-    return combined.filter((item) => !savedIds.has(item.id)).slice(0, 20);
+    return combined.filter((item) => !savedIds.has(item.id));
   }, [combined, savedItems, hasSavedItems, hasGenres]);
 
   const isLoadingRec =
     userItemsQuery.isLoading ||
-    (hasSavedItems && hasGenres && (movieQuery.isLoading || tvQuery.isLoading));
+    (hasGenres &&
+      (movieQuery.isLoading ||
+        tvQuery.isLoading ||
+        movieQuery.isFetchingNextPage ||
+        tvQuery.isFetchingNextPage));
 
-  const isErrorRec = userItemsQuery.isError;
-  const errorRec = userItemsQuery.error;
+  const isErrorRec =
+    userItemsQuery.error ||
+    (hasGenres && movieQuery.error) ||
+    (hasGenres && tvQuery.error);
+
   const noUserData = !userItemsQuery.isLoading && !hasSavedItems;
-
   const noGenres = hasSavedItems && !hasGenres;
 
   const isEmptyRec =
     !isLoadingRec && hasSavedItems && hasGenres && recommended.length === 0;
+
+  const fetchNextPage = () => {
+    if (movieQuery.hasNextPage) movieQuery.fetchNextPage();
+    if (tvQuery.hasNextPage) tvQuery.fetchNextPage();
+  };
+
+  const hasNextPage = movieQuery.hasNextPage || tvQuery.hasNextPage;
 
   return {
     recommended,
@@ -88,6 +106,7 @@ export function useRecommended() {
     noUserData,
     noGenres,
     isEmptyRec,
-    errorRec,
+    fetchNextPage,
+    hasNextPage,
   };
 }

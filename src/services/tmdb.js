@@ -126,118 +126,9 @@ export const getTvDetails = async (tvId) => {
 };
 
 // -----------------------------
-// multi search
-// -----------------------------
-export async function searchMoviesMultiple(queries = []) {
-  const cleaned = queries.map((q) => q.trim()).filter(Boolean);
-  if (!cleaned.length) return [];
-
-  const results = await Promise.all(
-    cleaned.map((q) =>
-      fetchTMDB(
-        `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(q)}`,
-      ),
-    ),
-  );
-
-  const bestMatches = results.flatMap((r) => {
-    const sorted = (r.results || []).sort(
-      (a, b) => b.popularity - a.popularity,
-    );
-    return sorted.slice(0, 3);
-  });
-
-  const filtered = bestMatches.filter(
-    (item) =>
-      item.popularity > 20 && item.vote_count > 50 && item.vote_average > 5,
-  );
-
-  const unique = Array.from(
-    new Map(filtered.map((item) => [item.id, item])).values(),
-  );
-
-  return unique;
-}
-
-export async function searchTVMultiple(queries = []) {
-  const cleaned = queries.map((q) => q.trim()).filter(Boolean);
-  if (!cleaned.length) return [];
-
-  const results = await Promise.all(
-    cleaned.map((q) =>
-      fetchTMDB(
-        `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(q)}`,
-      ),
-    ),
-  );
-
-  const bestMatches = results.flatMap((r) => {
-    const sorted = (r.results || []).sort(
-      (a, b) => b.popularity - a.popularity,
-    );
-    return sorted.slice(0, 3);
-  });
-
-  const filtered = bestMatches.filter(
-    (item) =>
-      item.popularity > 20 && item.vote_count > 50 && item.vote_average > 5,
-  );
-
-  const unique = Array.from(
-    new Map(filtered.map((item) => [item.id, item])).values(),
-  );
-
-  return unique;
-}
-
-// -----------------------------
 // genre-based
 // -----------------------------
-export async function fetchMovieByGenres(genres = []) {
-  const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
-  if (!cleaned.length) return [];
-
-  const genreIds = cleaned.map((g) => GENRE_NAME_TO_ID[g]).filter(Boolean);
-
-  if (!genreIds.length) return [];
-
-  const data = await fetchTMDB(
-    `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreIds.join(",")}`,
-  );
-
-  const results = data.results || [];
-
-  const filtered = results.filter(
-    (item) =>
-      item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
-  );
-
-  return Array.from(new Map(filtered.map((item) => [item.id, item])).values());
-}
-
-export async function fetchTVByGenres(genres = []) {
-  const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
-  if (!cleaned.length) return [];
-
-  const genreIds = cleaned.map((g) => GENRE_NAME_TO_ID[g]).filter(Boolean);
-
-  if (!genreIds.length) return [];
-
-  const data = await fetchTMDB(
-    `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreIds.join(",")}&sort_by=popularity.desc`,
-  );
-
-  const results = data.results || [];
-
-  const filtered = results.filter(
-    (item) =>
-      item.vote_count > 50 && item.vote_average >= 5 && item.popularity > 10,
-  );
-
-  return Array.from(new Map(filtered.map((item) => [item.id, item])).values());
-}
-
-export async function fetchMovieByGenresAI(genres = [], page = 1) {
+export async function fetchMovieByGenres(genres = [], page = 1) {
   const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
   if (!cleaned.length) return [];
 
@@ -266,7 +157,7 @@ export async function fetchMovieByGenresAI(genres = [], page = 1) {
   return filtered;
 }
 
-export async function fetchTvByGenresAI(genres = [], page = 1) {
+export async function fetchTvByGenres(genres = [], page = 1) {
   const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
   if (!cleaned.length) return [];
 

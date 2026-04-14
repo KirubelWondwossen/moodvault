@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getFromOpenRouter } from "../services/openrouter";
-import { fetchMovieByGenresAI, fetchTvByGenresAI } from "../services/tmdb";
+import { fetchMovieByGenres, fetchTvByGenres } from "../services/tmdb";
 import { useCombinedAIMedia } from "./useCombinedMedia";
 
 export function useAICombinedMedia(mood) {
@@ -25,7 +25,7 @@ export function useAICombinedMedia(mood) {
 
   const movieQuery = useInfiniteQuery({
     queryKey: ["discoverMovies", genres],
-    queryFn: ({ pageParam = 1 }) => fetchMovieByGenresAI(genres, pageParam),
+    queryFn: ({ pageParam = 1 }) => fetchMovieByGenres(genres, pageParam),
     enabled: hasGenres,
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage?.length) return undefined;
@@ -35,7 +35,7 @@ export function useAICombinedMedia(mood) {
 
   const tvQuery = useInfiniteQuery({
     queryKey: ["discoverTV", genres],
-    queryFn: ({ pageParam = 1 }) => fetchTvByGenresAI(genres, pageParam),
+    queryFn: ({ pageParam = 1 }) => fetchTvByGenres(genres, pageParam),
     enabled: hasGenres,
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage?.length) return undefined;

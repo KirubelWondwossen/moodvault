@@ -1,14 +1,24 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import MainLayout from "../components/Layout/MainLayout";
 import { SkeletonGrid } from "../components/ui/SkeletonGrid";
 import { useGetVisibleCards } from "../hooks/useGetVisbleCards";
 import { useRecommended } from "../hooks/useRecommended";
 import MovieCard from "../components/ui/MovieCard";
+import ErrorScreen from "../components/ui/ErrorScreen";
 import { getErrorType } from "../utils/getErrorType";
 
 export default function MoreRecommeded() {
-  const { recommended, isLoadingRec, isErrorRec, errorRec } = useRecommended();
+  const {
+    recommended,
+    isLoadingRec,
+    isErrorRec,
+    errorRec,
+    fetchNextPage,
+    hasNextPage,
+  } = useRecommended();
+
   const visibleSkeleton = useGetVisibleCards();
+
   if (isErrorRec) {
     return (
       <MainLayout title={"Recommended for you"}>
@@ -16,40 +26,57 @@ export default function MoreRecommeded() {
       </MainLayout>
     );
   }
+
   return (
     <MainLayout title={"Recommended for you"}>
-      {isLoadingRec ? (
+      {isLoadingRec && !recommended.length ? (
         <SkeletonGrid count={visibleSkeleton} />
       ) : (
-        <CardContainer data={recommended} />
+        <CardContainer
+          data={recommended}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          loading={isLoadingRec}
+        />
       )}
     </MainLayout>
   );
 }
 
-function CardContainer({ data }) {
-  const [visibleCards, setVisibleCards] = useState(6);
-  const [isMobile, setIsMobile] = useState(false);
+function CardContainer({ data, fetchNextPage, hasNextPage, loading }) {
+  const loaderRef = useRef(null);
 
   useEffect(() => {
-    const checkScreen = () => {
-      setIsMobile(window.innerWidth < 640);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+
+        if (first.isIntersecting && hasNextPage && !loading) {
+          fetchNextPage();
+        }
+      },
+      {
+        threshold: 0.2,
+        rootMargin: "200px",
+      },
+    );
+
+    const current = loaderRef.current;
+
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
     };
+  }, [hasNextPage, loading, fetchNextPage]);
 
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-    return () => window.removeEventListener("resize", checkScreen);
-  }, []);
-
-  if (!data || data.length === 0) {
+  if (!loading && (!data || data.length === 0)) {
     return (
       <h2 className="text-center text-base sm:text-lg md:text-xl">
         No data found
       </h2>
     );
   }
-
-  const displayedData = isMobile ? data.slice(0, visibleCards) : data;
 
   return (
     <>
@@ -65,21 +92,18 @@ function CardContainer({ data }) {
           mb-6 sm:mb-8
         "
       >
-        {displayedData.map((element) => (
+        {data.map((element) => (
           <MovieCard data={element} key={element.id} />
         ))}
       </div>
 
-      {isMobile && visibleCards < data.length && (
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={() => setVisibleCards((prev) => prev + 10)}
-            className="px-4 py-2 bg-primary text-white rounded-lg"
-          >
-            Load More
-          </button>
-        </div>
-      )}
+      <div ref={loaderRef} className="h-16 flex justify-center items-center">
+        {loading && <p className="text-sm opacity-70">Loading more...</p>}
+
+        {!hasNextPage && !loading && (
+          <p className="text-sm opacity-50">No more results</p>
+        )}
+      </div>
     </>
   );
 }

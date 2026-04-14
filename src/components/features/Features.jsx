@@ -4,22 +4,22 @@ import { Brain, Sparkles, Compass, Bookmark } from "lucide-react";
 const feats = [
   {
     title: "Mood-Based Recommendations",
-    desc: "Discover movies, TV shows, and anime based on how you feel. Select a mood and get personalized suggestions instantly.",
+    desc: "Discover movies, TV shows, and anime based on how you feel. Select a mood and get dynamic suggestions with infinite scroll for continuous discovery.",
     icon: Brain,
   },
   {
     title: "AI-Powered Suggestions",
-    desc: "Get smarter recommendations using AI that adapts to your mood and preferences, helping you find the perfect content every time.",
+    desc: "Get intelligent recommendations powered by AI that adapts to your mood and viewing patterns, helping you find content faster.",
     icon: Sparkles,
   },
   {
-    title: "Explore Trending Content",
-    desc: "Browse trending, popular, and top-rated movies, TV shows, and anime all in one place with a clean and intuitive interface.",
+    title: "Smart Vault Recommendations",
+    desc: "Receive personalized suggestions based on what you’ve saved in your vault, making your watchlist smarter over time.",
     icon: Compass,
   },
   {
     title: "Personal Watch Vault",
-    desc: "Save and manage your favorite content in your personal vault. Add, remove, and organize what you want to watch anytime.",
+    desc: "Save, manage, and organize your favorite content. Add or remove items anytime and keep track of what you want to watch.",
     icon: Bookmark,
   },
 ];
