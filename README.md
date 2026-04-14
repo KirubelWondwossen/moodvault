@@ -13,30 +13,38 @@ MoodVault is a **mood-based movie, TV show, and anime discovery app** that helps
 ## ✨ Features
 
 ### 🎭 Mood-Based Discovery
-- Get recommendations based on your mood (happy, sad, bored, etc.)
-- AI-powered suggestions for better personalization
+- Discover movies, TV shows, and anime based on your mood (happy, sad, bored, etc.)
+- Infinite scroll for continuous content discovery without interruptions
+
+### 🤖 AI-Powered Personalization
+- Smart recommendations powered by AI
+- Adapts suggestions based on your mood and interaction patterns
+
+### 🧠 Smart Vault Recommendations
+- Get personalized suggestions based on what you’ve saved in your vault
+- Your watchlist evolves into a recommendation engine over time
 
 ### 🔍 Explore Content
-- Trending movies, TV shows, and anime
-- Popular and top-rated content
+- Browse trending, popular, and top-rated movies, TV shows, and anime
+- Clean and intuitive browsing experience
 
 ### 📄 Detailed View
 - View ratings, genres, duration, and overview
-- Watch trailers directly
+- Watch trailers directly from the app
 
 ### 📦 Personal Vault
-- Save items to your watchlist
-- Remove items anytime
+- Save and manage your watchlist
+- Add or remove items anytime
 - Persistent storage with Firebase
 
 ### 📱 Fully Responsive
-- Works on mobile, tablet, and desktop
-- Clean and modern UI
+- Optimized for mobile, tablet, and desktop
+- Consistent UI across all screen sizes
 
 ### ⚡ Performance & UX
-- Loading skeletons
-- Error handling
-- Smooth UI interactions
+- Loading skeletons for smooth transitions
+- Error handling and fallback states
+- Optimized data fetching with caching
 
 ---
 
@@ -53,12 +61,14 @@ MoodVault is a **mood-based movie, TV show, and anime discovery app** that helps
 
 ## 📚 What I Learned
 
-- Building scalable React component structures
-- Managing async state with TanStack Query
-- Implementing authentication with Firebase
-- Creating responsive layouts with Tailwind
-- Handling real-world UI states (loading, error, empty)
-- Integrating AI-based recommendations
+- Building scalable and reusable React component architecture
+- Managing server state efficiently with TanStack Query
+- Implementing authentication and real-time data with Firebase
+- Designing fully responsive layouts using Tailwind CSS
+- Handling real-world UI states (loading, error, empty, edge cases)
+- Implementing infinite scroll for better user experience
+- Integrating AI-based recommendation systems
+- Designing personalized user experiences based on behavior and data
 
 ---
 
