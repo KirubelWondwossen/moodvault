@@ -27,23 +27,25 @@ export async function getFromOpenRouter(mood) {
           messages: [
             {
               role: "user",
-              content: `Suggest 20 titles for someone feeling ${mood}.
+              content: `Suggest 3 to 5 genres that best match this mood: ${mood}.
 
 STRICT RULES:
-- ONLY include VERY POPULAR and WELL-KNOWN titles
-- Movies must be from TMDB top/popular or globally معروف (e.g. Avengers, Inception, Titanic)
-- Avoid obscure, indie, or niche titles
-- Prefer titles with HIGH popularity or box office success
-- Anime must be mainstream (e.g. Naruto, Attack on Titan, Death Note)
-- Use EXACT official titles (no variations)
+- ONLY use genres from this exact list:
+Action, Adventure, Animation, Comedy, Crime, Drama, Fantasy, Horror, Romance, Science Fiction, Thriller
+- Choose ONLY the most relevant genres for the mood
+- Prefer commonly associated genres (no random or weak matches)
+- Do NOT repeat genres
+- Do NOT invent or modify genre names
 
 FORMAT RULES:
-- Return ONLY comma-separated titles
-- Do NOT include year
-- Do NOT include extra words
-- Example: Inception, Breaking Bad, Naruto
+- Return ONLY comma-separated genres
+- No explanations
+- No extra text
+- No numbering
+- No trailing punctuation
 
-Mood: ${mood}`,
+Example:
+Comedy, Romance, Adventure`,
             },
           ],
         },

@@ -156,7 +156,7 @@ export async function searchMoviesMultiple(queries = []) {
     new Map(filtered.map((item) => [item.id, item])).values(),
   );
 
-  return unique.slice(0, 20);
+  return unique;
 }
 
 export async function searchTVMultiple(queries = []) {
@@ -187,7 +187,7 @@ export async function searchTVMultiple(queries = []) {
     new Map(filtered.map((item) => [item.id, item])).values(),
   );
 
-  return unique.slice(0, 20);
+  return unique;
 }
 
 // -----------------------------
@@ -235,4 +235,62 @@ export async function fetchTVByGenres(genres = []) {
   );
 
   return Array.from(new Map(filtered.map((item) => [item.id, item])).values());
+}
+
+export async function fetchMovieByGenresAI(genres = [], page = 1) {
+  const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
+  if (!cleaned.length) return [];
+
+  const genreIds = cleaned.map((g) => GENRE_NAME_TO_ID[g]).filter(Boolean);
+
+  if (!genreIds.length) return [];
+
+  let selectedGenres;
+
+  if (page % 3 === 0 && genreIds.length > 1) {
+    selectedGenres = genreIds.slice(0, 2).join(",");
+  } else {
+    selectedGenres = genreIds[page % genreIds.length];
+  }
+
+  const data = await fetchTMDB(
+    `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${selectedGenres}&sort_by=popularity.desc&vote_average.gte=5&vote_count.gte=20&include_adult=false&page=${page}`,
+  );
+
+  const results = data.results || [];
+
+  const filtered = results.filter(
+    (item) => item.poster_path && item.backdrop_path,
+  );
+
+  return filtered;
+}
+
+export async function fetchTvByGenresAI(genres = [], page = 1) {
+  const cleaned = genres.map((g) => g?.trim()).filter(Boolean);
+  if (!cleaned.length) return [];
+
+  const genreIds = cleaned.map((g) => GENRE_NAME_TO_ID[g]).filter(Boolean);
+
+  if (!genreIds.length) return [];
+
+  let selectedGenres;
+
+  if (page % 3 === 0 && genreIds.length > 1) {
+    selectedGenres = genreIds.slice(0, 2).join(",");
+  } else {
+    selectedGenres = genreIds[page % genreIds.length];
+  }
+
+  const data = await fetchTMDB(
+    `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${selectedGenres}&sort_by=popularity.desc&vote_average.gte=5&vote_count.gte=20&include_adult=false&page=${page}`,
+  );
+
+  const results = data.results || [];
+
+  const filtered = results.filter(
+    (item) => item.poster_path && item.backdrop_path,
+  );
+
+  return filtered;
 }
