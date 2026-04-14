@@ -1,65 +1,87 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getFromOpenRouter } from "../services/openrouter";
-import { searchMoviesMultiple, searchTVMultiple } from "../services/tmdb";
-import { useCombinedMedia } from "./useCombinedMedia";
+import { fetchMovieByGenresAI, fetchTvByGenresAI } from "../services/tmdb";
+import { useCombinedAIMedia } from "./useCombinedMedia";
 
 export function useAICombinedMedia(mood) {
   const aiQuery = useQuery({
-    queryKey: ["aiRecommendations", mood],
+    queryKey: ["aiGenres", mood],
     queryFn: () => getFromOpenRouter(mood),
     enabled: !!mood,
     staleTime: 1000 * 60 * 60,
-    retry: 1,
   });
 
-  const normalizeTitles = (data) => {
+  function normalizeGenres(data) {
     if (!data) return [];
 
     return data
       .split(",")
-      .map((t) =>
-        t
-          .replace(/\(.*?\)/g, "")
-          .replace(/-.*$/, "")
-          .replace(/[!]+/g, "")
-          .trim(),
-      )
+      .map((g) => g.trim())
       .filter(Boolean);
-  };
+  }
 
-  const titles = normalizeTitles(aiQuery.data);
+  const genres = normalizeGenres(aiQuery.data);
+  const hasGenres = genres.length > 0;
 
-  const hasTitles = titles.length > 0;
-
-  const movieQuery = useQuery({
-    queryKey: ["aiMovies", titles],
-    queryFn: () => searchMoviesMultiple(titles),
-    enabled: hasTitles,
+  const movieQuery = useInfiniteQuery({
+    queryKey: ["discoverMovies", genres],
+    queryFn: ({ pageParam = 1 }) => fetchMovieByGenresAI(genres, pageParam),
+    enabled: hasGenres,
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.length) return undefined;
+      return allPages.length + 1;
+    },
   });
 
-  const tvQuery = useQuery({
-    queryKey: ["aiTV", titles],
-    queryFn: () => searchTVMultiple(titles),
-    enabled: hasTitles,
+  const tvQuery = useInfiniteQuery({
+    queryKey: ["discoverTV", genres],
+    queryFn: ({ pageParam = 1 }) => fetchTvByGenresAI(genres, pageParam),
+    enabled: hasGenres,
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.length) return undefined;
+      return allPages.length + 1;
+    },
   });
 
-  const aiResult = useCombinedMedia(movieQuery, tvQuery);
+  const movieData = movieQuery.data?.pages.flat() || [];
+  const tvData = tvQuery.data?.pages.flat() || [];
+
+  const combinedRaw = [...movieData, ...tvData];
+
+  const uniqueCombined = Array.from(
+    new Map(combinedRaw.map((item) => [item.id, item])).values(),
+  );
+
+  const aiResult = useCombinedAIMedia(uniqueCombined);
 
   const aiLoading =
     aiQuery.isLoading ||
-    (hasTitles && (movieQuery.isLoading || tvQuery.isLoading));
+    (hasGenres &&
+      (movieQuery.isFetchingNextPage ||
+        tvQuery.isFetchingNextPage ||
+        movieQuery.isLoading ||
+        tvQuery.isLoading));
 
   const aiError =
     aiQuery.error ||
-    (hasTitles && movieQuery.error) ||
-    (hasTitles && tvQuery.error);
+    (hasGenres && movieQuery.error) ||
+    (hasGenres && tvQuery.error);
 
   const isEmptyAI = !aiQuery.isLoading && aiResult.length === 0;
+
+  const fetchNextPage = () => {
+    if (movieQuery.hasNextPage) movieQuery.fetchNextPage();
+    if (tvQuery.hasNextPage) tvQuery.fetchNextPage();
+  };
+
+  const hasNextPage = movieQuery.hasNextPage || tvQuery.hasNextPage;
 
   return {
     aiResult,
     aiLoading,
     aiError,
     isEmptyAI,
+    fetchNextPage,
+    hasNextPage,
   };
 }

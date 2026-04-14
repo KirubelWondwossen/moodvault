@@ -27,3 +27,14 @@ export function useCombinedMedia(movieQuery, tvQuery) {
     return shuffleWithSeed(combined, combined.length);
   }, [movieQuery.data, tvQuery.data]);
 }
+
+export function useCombinedAIMedia(movieData, tvData) {
+  return useMemo(() => {
+    const movies = (movieData ?? []).map(normalizeMovie);
+    const tv = (tvData ?? []).map(normalizeTV);
+
+    const combined = [...movies, ...tv];
+
+    return shuffleWithSeed(combined, combined.length);
+  }, [movieData, tvData]);
+}
